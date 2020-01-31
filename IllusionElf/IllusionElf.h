@@ -10,6 +10,7 @@ public:
 	IllusionElf();
 	~IllusionElf();
 
+
 	virtual void init()
 	{
 		glEnable(GL_MULTISAMPLE);
