@@ -54,7 +54,7 @@ public:
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();(void)io;
 		ImGui::StyleColorsDark;
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
 		ImGui_ImplOpenGL2_Init();
 		initBasic();
 		//其他 初始化
@@ -73,8 +73,8 @@ public:
 	inline virtual void SwapBuffersSystem()
 	{
 		glfwPollEvents();
-		glfwMakeContextCurrent(window);
-		glfwSwapBuffers(window);
+		glfwMakeContextCurrent(mWindow);
+		glfwSwapBuffers(mWindow);
 	}
 	//刷新屏幕
 	inline virtual void clear()

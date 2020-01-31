@@ -22,13 +22,12 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{73A9F714-CC0D-4952-82E8-1E72500F99FB}</ProjectGuid>
     <RootNamespace>IllusionElf</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -81,7 +80,7 @@
       <AdditionalIncludeDirectories>E:\MyBeautifulWorld\IllusionElf\Elf\include\glm;E:\MyBeautifulWorld\IllusionElf\Elf\include\imgui;E:\MyBeautifulWorld\IllusionElf\Elf\include\imgui\other;D:\2020.0\include;E:\MyBeautifulWorld\IllusionElf\Elf\include\KHR;E:\MyBeautifulWorld\IllusionElf\Elf\include\glad;E:\MyBeautifulWorld\IllusionElf\Elf\include\PQE;E:\MyBeautifulWorld\IllusionElf\Elf\include;E:\MyBeautifulWorld\IllusionElf\Elf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\2020.0\lib\vs2017\x86\$(Configuration)\libfbxsdk-md.lib;D:\2020.0\lib\vs2017\x86\$(Configuration)\libxml2-md.lib;D:\2020.0\lib\vs2017\x86\$(Configuration)\zlib-md.lib;STB_IMAGE.lib;assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\2020.0\lib\vs2015\x86\$(Configuration)\libfbxsdk-md.lib;D:\2020.0\lib\vs2015\x86\$(Configuration)\libxml2-md.lib;D:\2020.0\lib\vs2015\x86\$(Configuration)\zlib-md.lib;STB_IMAGE.lib;assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

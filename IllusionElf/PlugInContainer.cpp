@@ -10,7 +10,7 @@ namespace ASE
 	{
 		// 在plugins目录中查找dll文件并将文件信息保存在fileData中
 		WIN32_FIND_DATA fileData;
-		HANDLE fileHandle = FindFirstFile(path+"*.dll", &fileData);
+		HANDLE fileHandle = FindFirstFile(LPCWCHAR((path+"*.dll").c_str()), &fileData);
 		if (fileHandle == (void*)ERROR_INVALID_HANDLE ||
 			fileHandle == (void*)ERROR_FILE_NOT_FOUND) {
 			// 没有找到任何dll文件
@@ -23,13 +23,13 @@ namespace ASE
 			typedef const char* (__cdecl *NameProc)(void);
 
 			// 将dll加载到当前进程的地址空间中
-			HINSTANCE mod = LoadLibrary((std::wstring(path) + std::wstring(fileData.cFileName)).c_str());
+			HINSTANCE mod = LoadLibrary((LPCWCHAR(path.c_str()) + std::wstring(fileData.cFileName)).c_str());
 
 			if (!mod) {
 				// 加载dll失败，则释放所有已加载dll
 				for (HINSTANCE hInst : modules)
 					FreeLibrary(hInst);
-				throw MyException(L"Library " + std::wstring(fileData.cFileName) + L" wasn't loaded successfully!");
+				//throw MyException(L"Library " + std::wstring(fileData.cFileName) + L" wasn't loaded successfully!");
 			}
 			// 从dll句柄中获取getObj和getName的函数地址
 			ObjProc objFunc = (ObjProc)GetProcAddress(mod, "getObj");

@@ -380,7 +380,7 @@ namespace PQE
 		if (node->shapeNum)
 		{
 			node->shapeVertexNum = shapeVertexCout;
-			shapeVertexCout += node->shapeNum*mModel->mMesh[node->mShapeIndex[i]]->vertexNum;
+			shapeVertexCout += node->shapeNum*mModel->mMesh[node->mShapeIndex[0]]->vertexNum;
 		}
 		for (unsigned int i = 0;i < node->shapeNum;i++)
 		{
@@ -393,7 +393,7 @@ namespace PQE
 		}
 		for (unsigned int i = 0;i < node->childNum;i++)
 		{
-			GenShapeGpuData(pos, &node->mChild[i], shapeGpuIndex);
+			GenShapeGpuData(pos, &node->mChild[i], shapeVertexCout);
 		}
 	}
 
@@ -431,8 +431,8 @@ namespace PQE
 				shapeNodeVertexCount = node->shapeVertexNum;
 				shpaeVertexCout = mModel->mMesh[node->mShapeIndex[0]]->vertexNum;
 				weightCout = node->shapeNum;
-				mshader->setShaderStorageBufferObjectData(*this->shape_ssao, node->shapeNum*shape_vertex_cout * sizeof(glm::vec3), shape_vertex);
-				delete[] shape_vertex;
+				//mshader->setShaderStorageBufferObjectData(*this->shape_ssao, node->shapeNum*shape_vertex_cout * sizeof(glm::vec3), shape_vertex);
+				//delete[] shape_vertex;
 			}
 			mshader->setFloat("shape_data.shapeNodeVertexCount", shapeNodeVertexCount);
 			mshader->setFloat("shape_data.vertexCout", shpaeVertexCout);
