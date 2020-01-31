@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Shadow.h"
 #include "PQEModel.h"
+
 class IllusionElf :public DimmensionWorldConsole
 {
 public:
@@ -40,6 +41,7 @@ public:
 		//look.useMouse();
 
 	}
+
 private:
 	QdeBiological IE_MODEL;
 	Camera look;
