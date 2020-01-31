@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{99af8834-8ac9-47bd-a5df-5deb0fd73066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pqe">
+      <UniqueIdentifier>{1a97d582-659a-49e4-8b4c-2060a07b8da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{e6c0804c-f42d-46f6-aeaf-69938ad4a8e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ph">
+      <UniqueIdentifier>{444b2996-4f05-493f-a1d2-62acd193a83a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IllusionElf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\fantastic.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\PurpleDreamElf.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\Camera.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\QdeModel.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\glad\glad.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\shader.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imconfig.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imgui.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imgui_internal.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imstb_rectpack.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imstb_textedit.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\imstb_truetype.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\other\imgui_impl_glfw.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\imgui\other\imgui_impl_opengl2.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\QdeRender.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\Biological.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\TimerTask.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\Shadow.h">
+      <Filter>pqe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\DimmensionWorldConsole.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\PQE\Physical.h">
+      <Filter>ph</Filter>
+    </ClInclude>
+    <ClInclude Include="PQEModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PlugIn.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PlugInContainer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IllusionElf.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\fantastic.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\PurpleDreamElf.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\Camera.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\QdeModel.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\glad.c">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\shader.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\imgui.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\imgui_demo.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\imgui_draw.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\imgui_widgets.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\other\imgui_impl_glfw.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\imgui\other\imgui_impl_opengl2.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\QdeRender.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\Biological.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\TimerTask.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\Shadow.cpp">
+      <Filter>pqe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\DimmensionWorldConsole.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\PQE\Physical.cpp">
+      <Filter>ph</Filter>
+    </ClCompile>
+    <ClCompile Include="PQEModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PlugIn.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PlugInContainer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Elf\magic\shader\modelLight.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\Elf\magic\shader\modelLight.vs">
+      <Filter>shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
