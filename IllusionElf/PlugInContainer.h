@@ -1,5 +1,6 @@
 #ifndef __PLUGINCONTAINER_H__
 #define __PLUGINCONTAINER_H__
+
 /*
 *插件容器
 */
@@ -8,9 +9,13 @@
 #include<vector>
 #include<algorithm>
 #include<functional>
+#include<comutil.h>
+#include<io.h>
+#include<direct.h>
 #include<windows.h>
 #include"PlugIn.h"
 
+#pragma comment(lib, "comsuppw.lib")
 
 namespace ASE
 {
@@ -21,7 +26,6 @@ namespace ASE
 		bool Run();
 		bool Init(std::string path="../plug/");//加载插件
 		void Destory();//释放插件
-		bool JudgePlugName(PlugIn &obj, std::string name);
 		~PlugInContainer();
 
 	private:
