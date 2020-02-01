@@ -8,7 +8,7 @@ layout (location = 3) in ivec4 BoneIDs;
 layout (location = 4) in vec4  Weights;
 layout (location = 5) in uint  ShapeVertexIndex;
 
-layout(std430,binding = 0,row_major) buffer Matrix
+layout(std430,binding = 0,row_major) buffer ShapeWeight
 {
     float shapeWeight[];
 };
@@ -26,8 +26,8 @@ layout(std430,binding = 2,row_major) buffer ShapeVertex
 struct ShapeData
 {
 	int shapeNodeVertexCount;
-	int vertexCout;
-	int weightCout;
+	int vertexCount;
+	int weightCount;
 };
 
 out vec2 mTexCoords;
@@ -52,10 +52,10 @@ void main()
 		boneTransform+=BM[BoneIDs[1]]*Weights[1];
 		boneTransform+=BM[BoneIDs[2]]*Weights[2];
 		boneTransform+=BM[BoneIDs[3]]*Weights[3];
-		for(int i=0;i<shape_data.weightCout;i++)
+		for(int i=0;i<shape_data.weightCount;i++)
 		{
-			vec3 influence=(data[shape_data.shapeNodeVertexCout+i*shape_data.vertexCout+ShapeVertexIndex]-position)*shapeWeight[i];
-		 	mpos+=influence;
+			vec3 influence=(data[shape_data.shapeNodeVertexCount+i*shape_data.vertexCount+ShapeVertexIndex]-position)*shapeWeight[i];
+		 	pos+=influence;
 		}
 		pos=boneTransform*vec4(position,1.0f);
 	}

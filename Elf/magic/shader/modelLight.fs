@@ -10,7 +10,7 @@
 
 //-----------------------------------------------------------------------------------------------------------
 //
-struct ASESMaterial{float shininess;vec3 diffuse,specular;sampler2D diffuse,specular;};
+struct ASESMaterial{float shininess;vec3 vdiffuse,vspecular;sampler2D diffuse,specular;};
 //平行光
 struct ASESLightDirction{vec3 direction,ambient,diffuse,specular;};
 //点光源
@@ -24,10 +24,10 @@ struct ASESConfig{bool isDiffuseSampler,isSpecularSampler,isLightdirction;int li
 #define NR_POINT_LIGHTS 1
 
 //光照相关函数
-vec3    CalcDirLight(dirLight light, vec3 normal, vec3 carmeDir,float shadow);
-vec3    CalcPointLight(pointLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,float shadow);
-vec3    CalcSpotLight(spotLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,float shadow);
-float   ShadowCalculation(vec4 fragPosLightSpace,dirLight light, vec3 normal);
+vec3    CalcDirLight(ASESLightDirction light, vec3 normal, vec3 carmeDir,float shadow);
+vec3    CalcPointLight(ASESLightPoint light, vec3 normal, vec3 fragPos, vec3 carmeDir,float shadow);
+vec3    CalcSpotLight(ASESLightSpot light, vec3 normal, vec3 fragPos, vec3 carmeDir,float shadow);
+float   ShadowCalculation(vec4 fragPosLightSpace,ASESLightDirction light, vec3 normal);
 //-----------------------------------------------------------------------------------------------------------
 
 //设置变量
@@ -55,15 +55,15 @@ void main()
     float shadow=0;                                                      //阴影结果
     shadow = ShadowCalculation(mFragPosLightSpace,mDirLight,norm);       //阴影计算
     result += CalcDirLight(mDirLight,norm,carmeDir,shadow);              //平行光光照
-    for(int i = 0; i < mConfig.PointLightNum; i++)                       //点光源光照
+    for(int i = 0; i < mConfig.lightPointNum; i++)                       //点光源光照
         result = CalcPointLight(mPointLight[i], norm, mFragPos, carmeDir,shadow);
-    for(int i = 0; i < mConfig.SpotLightNum;i++)                         //聚光灯
-        result += calcSpotLight(mSpotLight, norm, mFragPos, carmeDir,shadow);    
+    for(int i = 0; i < mConfig.lightSpotNum;i++)                         //聚光灯
+        result += CalcSpotLight(mSpotLight, norm, mFragPos, carmeDir,shadow);    
     mFragColor = vec4(pow(result, vec3(1.0/gamma)), 1.0f);
 }
 
 //平行光
-vec3 CalcDirLight(dirLight light, vec3 normal, vec3 carmeDir,float shadow)
+vec3 CalcDirLight(ASESLightDirction light, vec3 normal, vec3 carmeDir,float shadow)
 {
     vec3  diffuse,specular,ambient;
     vec3  lightDir=normalize(-light.direction);                         //标准化光线
@@ -71,20 +71,20 @@ vec3 CalcDirLight(dirLight light, vec3 normal, vec3 carmeDir,float shadow)
     float diff=max(dot(normal,lightDir),0.0);                           //漫反射强度
     float spec=pow(max(dot(carmeDir,reflectDir),0.0),mMaterial.shininess);
     //相加
-    ambient=light.ambient*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isDiffuseSampler)
-        diffuse=light.diffuse*diff*mMaterial.diffuse;
+    ambient=light.ambient*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isDiffuseSampler)
+        diffuse=light.diffuse*diff*mMaterial.vdiffuse;
     else
-        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isSpecularSampler)
-        specular=light.specular*spec*mMaterial.specular;
+        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isSpecularSampler)
+        specular=light.specular*spec*mMaterial.vspecular;
     else
-        specular=light.specular*spec*vec3(texture(mMaterial.specular,TexCoords));
+        specular=light.specular*spec*vec3(texture(mMaterial.specular,mTexCoords));
     return (ambient+(1.0-shadow)*(diffuse+specular));
 }
 
 //点光源
-vec3 CalcPointLight(pointLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,float shadow)
+vec3 CalcPointLight(ASESLightPoint light, vec3 normal, vec3 fragPos, vec3 carmeDir,float shadow)
 {
     vec3 diffuse,specular,ambient;
     vec3 lightDir=normalize(light.position-mFragPos);
@@ -94,15 +94,15 @@ vec3 CalcPointLight(pointLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,
     //顶点与光线距离
     float distance=length(light.position-mFragPos);
     float attenuation=1.0/(light.constant+light.linear*distance+light.quadratic*(distance*distance));//光线衰弱
-     ambient=light.ambient*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isDiffuseSampler)
-        diffuse=light.diffuse*diff*mMaterial.diffuse;
+     ambient=light.ambient*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isDiffuseSampler)
+        diffuse=light.diffuse*diff*mMaterial.vdiffuse;
     else
-        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isSpecularSampler)
-        specular=light.specular*spec*mMaterial.specular;
+        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isSpecularSampler)
+        specular=light.specular*spec*mMaterial.vspecular;
     else
-        specular=light.specular*spec*vec3(texture(mMaterial.specular,TexCoords));
+        specular=light.specular*spec*vec3(texture(mMaterial.specular,mTexCoords));
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -111,7 +111,7 @@ vec3 CalcPointLight(pointLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,
 }
 
 //聚光灯
-vec3 calcSpotLight(spotLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,float shadow)
+vec3 CalcSpotLight(ASESLightSpot light, vec3 normal, vec3 fragPos, vec3 carmeDir,float shadow)
 {
     vec3 diffuse,specular,ambient;
     vec3 lightDir = normalize(light.position - mFragPos);
@@ -123,15 +123,15 @@ vec3 calcSpotLight(spotLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,fl
     float theta = dot(lightDir, normalize(-light.direction)); 
     float epsilon = light.cutOff - light.outerCutOff;
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    ambient=light.ambient*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isDiffuseSampler)
-        diffuse=light.diffuse*diff*mMaterial.diffuse;
+    ambient=light.ambient*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isDiffuseSampler)
+        diffuse=light.diffuse*diff*mMaterial.vdiffuse;
     else
-        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,TexCoords));
-    if(mConfig.isSpecularSampler)
-        specular=light.specular*spec*mMaterial.specular;
+        diffuse=light.diffuse*diff*vec3(texture(mMaterial.diffuse,mTexCoords));
+    if(!mConfig.isSpecularSampler)
+        specular=light.specular*spec*mMaterial.vspecular;
     else
-        specular=light.specular*spec*vec3(texture(mMaterial.specular,TexCoords));
+        specular=light.specular*spec*vec3(texture(mMaterial.specular,mTexCoords));
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
@@ -139,7 +139,7 @@ vec3 calcSpotLight(spotLight light, vec3 normal, vec3 mFragPos, vec3 carmeDir,fl
 }
 
 //阴影
-float ShadowCalculation(vec4 fragPosLightSpace,dirLight light, vec3 normal)
+float ShadowCalculation(vec4 fragPosLightSpace,ASESLightDirction light, vec3 normal)
 {
     vec3 lightDir=normalize(-light.direction);//标准化光线
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;

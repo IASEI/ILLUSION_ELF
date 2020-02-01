@@ -169,6 +169,7 @@ namespace PQE
 		void SetMatrix(std::string name, glm::mat4 *mat);
 		void SetBoneSSAOId(unsigned int id);
 		void SetShapeSSAOId(unsigned int id);
+		void SetShapeWeightSSAOId(unsigned int id);
 
 		void ComputeBoneMatrix(PQE_NODE *node, glm::mat4 parent, glm::mat4 *data);
 
@@ -195,7 +196,8 @@ namespace PQE
 		unsigned int *mesh_vbo_coord;
 		unsigned int *bone_ssao;
 		unsigned int *shape_ssao;
-		unsigned int* shape_vbo;
+		unsigned int *shape_weight_ssao;
+		unsigned int *shape_vbo;
 		unsigned int *bone_weight_vbo;
 		unsigned int *bone_index_vbo;
 	};

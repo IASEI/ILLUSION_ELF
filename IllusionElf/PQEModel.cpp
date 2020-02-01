@@ -422,21 +422,26 @@ namespace PQE
 	void PQEModel::RenderChild(PQE_NODE *node, shader *mshader)
 	{
 		unsigned int shapeNodeVertexCount = 0;
-		unsigned int shpaeVertexCout = 0;
-		unsigned int weightCout = 0;
+		unsigned int shpaeVertexCount = 0;
+		unsigned int weightCount = 0;
 		if (node->mType == PQE_NODE::PQE_NODE_MESH|| node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
 		{
 			if (mshader&&shape_ssao&&node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
 			{
 				shapeNodeVertexCount = node->shapeVertexNum;
-				shpaeVertexCout = mModel->mMesh[node->mShapeIndex[0]]->vertexNum;
-				weightCout = node->shapeNum;
-				//mshader->setShaderStorageBufferObjectData(*this->shape_ssao, node->shapeNum*shape_vertex_cout * sizeof(glm::vec3), shape_vertex);
-				//delete[] shape_vertex;
+				shpaeVertexCount = mModel->mMesh[node->mShapeIndex[0]]->vertexNum;
+				weightCount = node->shapeNum;
+				float *weight = new float[weightCount];
+				for (unsigned int i= 0;i < node->shapeNum;i++)
+				{
+					weight[i] = mModel->mMesh[node->mShapeIndex[i]]->mShapeWeight;
+				}
+				mshader->setShaderStorageBufferObjectData(*this->shape_weight_ssao, weightCount* sizeof(float), weight);
+				delete[] weight;
 			}
 			mshader->setFloat("shape_data.shapeNodeVertexCount", shapeNodeVertexCount);
-			mshader->setFloat("shape_data.vertexCout", shpaeVertexCout);
-			mshader->setFloat("shape_data.weightCout", weightCout);
+			mshader->setFloat("shape_data.vertexCount", shpaeVertexCount);
+			mshader->setFloat("shape_data.weightCount", weightCount);
 			for (unsigned int i = 0; i < node->meshNum; i++)
 			{
 				unsigned int meshIndex=node->mMeshIndex[i];
@@ -490,6 +495,14 @@ namespace PQE
 			this->shape_ssao = new unsigned int(id);
 		else
 			*this->shape_ssao = id;
+	}
+
+	void PQEModel::SetShapeWeightSSAOId(unsigned int id)
+	{
+		if (!this->shape_weight_ssao)
+			this->shape_weight_ssao = new unsigned int(id);
+		else
+			*this->shape_weight_ssao = id;
 	}
 
 	void PQEModel::ComputeBoneMatrix(PQE_NODE *node, glm::mat4 parent,glm::mat4 *data)
