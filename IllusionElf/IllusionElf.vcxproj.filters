@@ -93,11 +93,11 @@
     <ClInclude Include="PQEModel.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PlugIn.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\Elf\include\PQE\PlugInContainer.h">
+      <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="PlugInContainer.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\Elf\include\PQE\PlugIn.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,11 +161,11 @@
     <ClCompile Include="PQEModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PlugIn.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\Elf\include\PQE\PlugIn.cpp">
+      <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="PlugInContainer.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\Elf\include\PQE\PlugInContainer.cpp">
+      <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

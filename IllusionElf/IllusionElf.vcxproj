@@ -134,6 +134,8 @@
     <ClInclude Include="..\Elf\include\PQE\Biological.h" />
     <ClInclude Include="..\Elf\include\PQE\Camera.h" />
     <ClInclude Include="..\Elf\include\PQE\Physical.h" />
+    <ClInclude Include="..\Elf\include\PQE\PlugIn.h" />
+    <ClInclude Include="..\Elf\include\PQE\PlugInContainer.h" />
     <ClInclude Include="..\Elf\include\PQE\PurpleDreamElf.h" />
     <ClInclude Include="..\Elf\include\PQE\QdeModel.h" />
     <ClInclude Include="..\Elf\include\PQE\shader.h" />
@@ -141,8 +143,6 @@
     <ClInclude Include="..\Elf\include\PQE\TimerTask.h" />
     <ClInclude Include="..\Elf\QdeRender.h" />
     <ClInclude Include="IllusionElf.h" />
-    <ClInclude Include="PlugIn.h" />
-    <ClInclude Include="PlugInContainer.h" />
     <ClInclude Include="PQEModel.h" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +158,8 @@
     <ClCompile Include="..\Elf\include\PQE\Biological.cpp" />
     <ClCompile Include="..\Elf\include\PQE\Camera.cpp" />
     <ClCompile Include="..\Elf\include\PQE\Physical.cpp" />
+    <ClCompile Include="..\Elf\include\PQE\PlugIn.cpp" />
+    <ClCompile Include="..\Elf\include\PQE\PlugInContainer.cpp" />
     <ClCompile Include="..\Elf\include\PQE\PurpleDreamElf.cpp" />
     <ClCompile Include="..\Elf\include\PQE\QdeModel.cpp" />
     <ClCompile Include="..\Elf\include\PQE\shader.cpp" />
@@ -165,8 +167,6 @@
     <ClCompile Include="..\Elf\include\PQE\TimerTask.cpp" />
     <ClCompile Include="..\Elf\QdeRender.cpp" />
     <ClCompile Include="IllusionElf.cpp" />
-    <ClCompile Include="PlugIn.cpp" />
-    <ClCompile Include="PlugInContainer.cpp" />
     <ClCompile Include="PQEModel.cpp" />
   </ItemGroup>
   <ItemGroup>
