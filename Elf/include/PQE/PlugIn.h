@@ -13,7 +13,9 @@ namespace ASE
 		enum ASE_PLUGIN_TYPE { ASE_PLUGIN_GLOBAL,ASE_PLUGIN_COMMAND};
 	public:
 		PlugIn();
-		virtual bool	Run() = 0;
+		virtual bool	Run();		//临时插件运行入口
+		virtual bool    Render();	//图形渲染入口
+		virtual bool    Compute();	//计算数据入口
 		std::string		GetName();
 		ASE_PLUGIN_TYPE GetType();
 		bool			GetStatus();

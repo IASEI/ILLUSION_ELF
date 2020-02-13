@@ -7,6 +7,21 @@ namespace ASE
 	{
 	}
 
+	bool PlugIn::Run()
+	{
+	
+	}
+
+	bool PlugIn::Render()
+	{
+	
+	}
+
+	bool PlugIn::Compute()
+	{
+	
+	}
+
 	std::string PlugIn::GetName()
 	{
 		return this->mName;

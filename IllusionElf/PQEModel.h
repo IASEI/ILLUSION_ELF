@@ -26,7 +26,7 @@ namespace PQE
 		unsigned int        matrixNum;		//矩阵数量
 		PQE_NODE			*mRootNode;		//根节点
 		PQE_MATRIX			*mMatrix;		//矩阵
-		PQE_MESH			**mMesh;			//网络
+		PQE_MESH			**mMesh;		//网络
 		PQE_MATERIAL		*mMaterial;		//材质
 		PQE_TEXTURE			*mTexture;		//纹理
 	};

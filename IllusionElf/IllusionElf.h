@@ -10,7 +10,7 @@ public:
 	IllusionElf();
 	~IllusionElf();
 
-	virtual void init()
+	void Init()
 	{
 		glEnable(GL_MULTISAMPLE);
 		glEnable(GL_DEPTH_TEST);
@@ -27,7 +27,7 @@ public:
 		this->model->SetShapeSSAOId(mShader->createShaderStorageBufferObject(2, sizeof(glm::vec3) * 1000000, NULL, GL_DYNAMIC_COPY));
 	}
 
-	virtual void renderBasis()
+	void RenderBasis()
 	{
 		if (i > 360.f)
 			i = 0;
