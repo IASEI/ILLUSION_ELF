@@ -25,6 +25,7 @@ public:
 		model = new PQE::PQEModel("miku.fbx");
 		this->model->SetBoneSSAOId(mShader->createShaderStorageBufferObject(1, sizeof(glm::mat4)*this->model->GetModel()->matrixNum, NULL, GL_DYNAMIC_COPY));
 		this->model->SetShapeSSAOId(mShader->createShaderStorageBufferObject(2, sizeof(glm::vec3) * 1000000, NULL, GL_DYNAMIC_COPY));
+		printf("-----------------\n");
 	}
 
 	void RenderBasis()

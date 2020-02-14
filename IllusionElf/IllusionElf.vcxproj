@@ -22,6 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{73A9F714-CC0D-4952-82E8-1E72500F99FB}</ProjectGuid>
     <RootNamespace>IllusionElf</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -69,7 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>E:\MyBeautifulWorld\IllusionElf\Elf\tools32\debug\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\Elf\tools32\debug\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(OutDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -77,11 +79,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\MyBeautifulWorld\IllusionElf\Elf\include\glm;E:\MyBeautifulWorld\IllusionElf\Elf\include\imgui;E:\MyBeautifulWorld\IllusionElf\Elf\include\imgui\other;D:\2020.0\include;E:\MyBeautifulWorld\IllusionElf\Elf\include\KHR;E:\MyBeautifulWorld\IllusionElf\Elf\include\glad;E:\MyBeautifulWorld\IllusionElf\Elf\include\PQE;E:\MyBeautifulWorld\IllusionElf\Elf\include;E:\MyBeautifulWorld\IllusionElf\Elf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Elf\include\glm;..\Elf\include\imgui;..\Elf\include\imgui\other;..\Elf\include\fbx;..\Elf\include\KHR;..\Elf\include\glad;..\Elf\include\PQE;..\Elf\include;..\Elf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D:\2020.0\lib\vs2015\x86\$(Configuration)\libfbxsdk-md.lib;D:\2020.0\lib\vs2015\x86\$(Configuration)\libxml2-md.lib;D:\2020.0\lib\vs2015\x86\$(Configuration)\zlib-md.lib;STB_IMAGE.lib;assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;STB_IMAGE.lib;assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <BuildLog>
+      <Path>$(OutDir)$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -9,17 +9,17 @@ namespace ASE
 
 	bool PlugIn::Run()
 	{
-	
+		return true;
 	}
 
 	bool PlugIn::Render()
 	{
-	
+		return true;
 	}
 
 	bool PlugIn::Compute()
 	{
-	
+		return true;
 	}
 
 	std::string PlugIn::GetName()

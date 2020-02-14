@@ -47,6 +47,7 @@ void DimmensionWorldConsole::InitSystem()
 	ImGui::StyleColorsDark;
 	ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
 	ImGui_ImplOpenGL2_Init();
+	printf("InittSystem\n");
 	this->InitBasic();
 	//其他 初始化
 	this->Init();
@@ -75,6 +76,7 @@ void DimmensionWorldConsole::Clear()
 void DimmensionWorldConsole::NewImgGuiFrame()
 {
 	ImGui_ImplOpenGL2_NewFrame();
+
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
@@ -82,8 +84,8 @@ void DimmensionWorldConsole::NewImgGuiFrame()
 void DimmensionWorldConsole::Render()
 {
 	this->RenderBasis();			//自定义opengl渲染
-	this->mPlugIn->Run();	//运行插件
-	this->NewImgGuiFrame();		//新建ImGui
+	this->mPlugIn->Run();			//运行插件
+	this->NewImgGuiFrame();			//新建ImGui
 	this->RenderImgUI();			//自定义ImGui渲染
 }
 void DimmensionWorldConsole::RenderBasis()
@@ -98,8 +100,9 @@ void DimmensionWorldConsole::StartSystemThread() {}
 //初始化普通数据
 void DimmensionWorldConsole::InitBasic()
 {
-	this->mShader = new shader("../Elf/magic/shader/modelLight.vs", "../Elf/magic/shader/modelLight.fs");
-	this->mShadow = new shader("../Elf/magic/shader/shadowTexture.vs", "../Elf/magic/shader/shadowTexture.fs");
+	
+	this->mShader = new shader("../Elf/magic/shader/modelLight1.vs", "../Elf/magic/shader/modelLight1.fs");
+	this->mShadow = new shader("../Elf/magic/shader/shadowTexture1.vs", "../Elf/magic/shader/shadowTexture1.fs");
 	this->mPlugIn = new ASE::PlugInContainer;
 	this->mShader->use();
 	this->mShader->setBool("animat", false);
@@ -124,6 +127,7 @@ void DimmensionWorldConsole::InitBasic()
 	this->mShader->setVec3("mDirLight.diffuse", glm::vec3(0.6f));
 	this->mShader->setVec3("mDirLight.specular", glm::vec3(0.0f));
 
+	printf("InitBasic\n");
 	this->mPlugIn->Init();
 }
 void DimmensionWorldConsole::Init() {}
@@ -136,6 +140,7 @@ void DimmensionWorldConsole::Exit()
 int main(int argc, char *argv[])
 {
 	int ret = -1;
+	printf("begin");
 	DimmensionWorldConsole *dwd = DimmensionWorldConsole::create("dwd");
 	if (dwd != 0)
 	{
