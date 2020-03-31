@@ -19,7 +19,7 @@ namespace ASE
 		if (fileHandle == (void*)ERROR_INVALID_HANDLE ||fileHandle == (void*)ERROR_FILE_NOT_FOUND||fileHandle== INVALID_HANDLE_VALUE)
 		{
 			// 没有找到任何dll文件
-			printf("Not file of the .dll\n");
+			std::cout << "not dll" << std::endl;
 			return false;
 		}
 

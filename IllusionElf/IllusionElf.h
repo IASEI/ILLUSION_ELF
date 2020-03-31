@@ -25,6 +25,7 @@ public:
 		model = new PQE::PQEModel("miku.fbx");
 		this->model->SetBoneSSAOId(mShader->createShaderStorageBufferObject(1, sizeof(glm::mat4)*this->model->GetModel()->matrixNum, NULL, GL_DYNAMIC_COPY));
 		this->model->SetShapeSSAOId(mShader->createShaderStorageBufferObject(2, sizeof(glm::vec3) * 1000000, NULL, GL_DYNAMIC_COPY));
+		this->model->SetShapeWeightSSAOId(mShader->createShaderStorageBufferObject(0,10000, NULL, GL_DYNAMIC_COPY));
 		printf("-----------------\n");
 	}
 
@@ -32,7 +33,7 @@ public:
 	{
 		if (i > 360.f)
 			i = 0;
-		i += 0.05f;
+		i += 0.6f;
 		mShader->use();
 		mShader->use();
 		mShader->setMat4("view", look.getViewMat());

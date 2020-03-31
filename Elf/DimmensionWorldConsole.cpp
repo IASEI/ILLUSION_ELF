@@ -40,6 +40,7 @@ void DimmensionWorldConsole::InitSystem()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))return;
 	glViewport(0, 0, mScreenWidth, mScreenHeight);
 	glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
+	std::cout << "init glfw opengl finish" << endl;
 	//初始化imgui
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -47,7 +48,7 @@ void DimmensionWorldConsole::InitSystem()
 	ImGui::StyleColorsDark;
 	ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
 	ImGui_ImplOpenGL2_Init();
-	printf("InittSystem\n");
+	std::cout << "init imgui finish" << endl;
 	this->InitBasic();
 	//其他 初始化
 	this->Init();
@@ -101,11 +102,11 @@ void DimmensionWorldConsole::StartSystemThread() {}
 void DimmensionWorldConsole::InitBasic()
 {
 	
-	this->mShader = new shader("../Elf/magic/shader/modelLight1.vs", "../Elf/magic/shader/modelLight1.fs");
-	this->mShadow = new shader("../Elf/magic/shader/shadowTexture1.vs", "../Elf/magic/shader/shadowTexture1.fs");
+	this->mShader = new shader("../Elf/magic/shader/modelLight.vs", "../Elf/magic/shader/modelLight.fs");
+	this->mShadow = new shader("../Elf/magic/shader/shadowTexture.vs", "../Elf/magic/shader/shadowTexture.fs");
 	this->mPlugIn = new ASE::PlugInContainer;
 	this->mShader->use();
-	this->mShader->setBool("animat", false);
+	this->mShader->setBool("animat", true);
 	this->mShader->setMat4("projection", glm::perspective(glm::radians(45.0f), this->mScreenWidth / this->mScreenHeight, 0.1f, 10000.0f));
 	//this->mShader->setMat4("projection", glm::ortho(-1920.0f/1080, 1920.0f / 1080, -1.0f, 1.0f, -1.0f, 100.0f));
 	this->mShader->setInt("mShadowMap", 1);
@@ -127,7 +128,7 @@ void DimmensionWorldConsole::InitBasic()
 	this->mShader->setVec3("mDirLight.diffuse", glm::vec3(0.6f));
 	this->mShader->setVec3("mDirLight.specular", glm::vec3(0.0f));
 
-	printf("InitBasic\n");
+	std::cout << "init shader finish" << endl;
 	this->mPlugIn->Init();
 }
 void DimmensionWorldConsole::Init() {}
@@ -140,7 +141,6 @@ void DimmensionWorldConsole::Exit()
 int main(int argc, char *argv[])
 {
 	int ret = -1;
-	printf("begin");
 	DimmensionWorldConsole *dwd = DimmensionWorldConsole::create("dwd");
 	if (dwd != 0)
 	{

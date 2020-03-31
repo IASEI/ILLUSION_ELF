@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (location = 0) in vec3  position;
+layout (location = 0) in vec4  position;
 layout (location = 1) in vec3  Normal;
 layout (location = 2) in vec2  texCoord;
 
@@ -20,7 +20,7 @@ layout(std430,binding = 1,row_major) buffer Matrix
 
 layout(std430,binding = 2,row_major) buffer ShapeVertex 
 {
-    vec3 data[];
+    vec4 data[];
 };
 
 struct ShapeData
@@ -46,22 +46,27 @@ void main()
 {
 	int shapeVertexBegin=0,shapeVertexEnd=0;
 	vec4 pos;
-	if(animat)
+	if(true)
 	{
+		vec3 pos1=position.xyz;
 		mat4 boneTransform=BM[BoneIDs[0]]*Weights[0];
 		boneTransform+=BM[BoneIDs[1]]*Weights[1];
 		boneTransform+=BM[BoneIDs[2]]*Weights[2];
 		boneTransform+=BM[BoneIDs[3]]*Weights[3];
+		boneTransform=mat4(1.0f);
 		for(int i=0;i<shape_data.weightCount;i++)
 		{
-			vec3 influence=(data[shape_data.shapeNodeVertexCount+i*shape_data.vertexCount+ShapeVertexIndex]-position)*shapeWeight[i];
-		 	pos+=influence;
+			vec4 influence=(data[i*shape_data.vertexCount+int(position.w)]-position)*shapeWeight[i];
+		 	pos1+=influence.xyz;
 		}
-		pos=boneTransform*vec4(position,1.0f);
+		pos=boneTransform*vec4(pos1,1.0f);
+		//pos=vec4(pos1,1.0f);
 	}
 	else
 	{
-		pos=vec4(position,1.0f);
+		vec3 pos1=position.xyz;
+		pos1=data[int(position.w)].xyz;
+		pos=vec4(pos1,1.0f);
 	}
     mNormals = mat3(transpose(inverse(model))) * Normal;  
     mTexCoords = texCoord;

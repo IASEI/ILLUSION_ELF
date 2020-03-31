@@ -28,7 +28,7 @@ namespace PQE
 	{
 	}
 	/*-------------------------------------------------------------------------------------------*/
-	PQE_MESH::PQE_MESH():mType(PQE_MESH_ORDINARY),mBoneIndex(0),mBoneWeight(0)
+	PQE_MESH::PQE_MESH():mType(PQE_MESH_ORDINARY)
 	{
 	}
 
@@ -36,24 +36,21 @@ namespace PQE
 	{
 		delete[] mShapeVertexIndex;
 		delete[] mFace;
-		delete[] mPosition;
-		delete[] mNormal;
-		delete[] mCoord;
-		delete[] mColor;
-		delete[] mBoneIndex;
-		delete[] mBoneWeight;
+		
 		delete[] aabb;
 
 		mShapeVertexIndex=NULL;
 		mFace = NULL;
-		mPosition = NULL;
-		mNormal = NULL;
-		mCoord = NULL;
-		mColor = NULL;
-		mBoneIndex = NULL;
-		mBoneWeight = NULL;
 		aabb = NULL;
 
+	}
+	/*-------------------------------------------------------------------------------------------*/
+	PQE_SHAPE::PQE_SHAPE()
+	{
+	}
+
+	PQE_SHAPE::~PQE_SHAPE()
+	{
 	}
 	/*-------------------------------------------------------------------------------------------*/
 	PQE_MATERIAL::PQE_MATERIAL()
@@ -83,92 +80,53 @@ namespace PQE
 
 	PQEModel::PQEModel(std::string path)
 	{
+		unsigned int shape_cout = 0;
+		std::vector<PQE_SHAPE*> pqe_shape;
 		this->mModelPath = path;
 		this->mModel = new PQE_MODEL;
 		Assimp::Importer m_Importer;
 		const aiScene* m_pScene = m_Importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
-		if (!m_pScene || m_pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_pScene->mRootNode){cout << "ERROR::ASSIMP:: " << m_Importer.GetErrorString() << endl;return;}
+		if (!m_pScene || m_pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_pScene->mRootNode){ std::cout << "ERROR::ASSIMP:: " << m_Importer.GetErrorString() << std::endl;return;}
+		std::cout << "start load model" << std::endl;
 		if (m_pScene)
 		{
-			LoadNode(m_pScene);
-			LoadMesh(m_pScene);
-			LoadMaterial(m_pScene);
-			GenSpesicalID();
-			GenTextureID();
+			LoadMesh(m_pScene);					std::cout << "load mesh finish" << std::endl;
+			LoadNode(m_pScene);					std::cout << "load node finish" << std::endl;
+			LoadMaterial(m_pScene);				std::cout << "load material finish" << std::endl;
+			LoadShape(mModelPath, pqe_shape);	std::cout << "load shape finish" << std::endl;
+			mModel->mShape = new PQE_SHAPE*[pqe_shape.size()];
+			shape_cout = pqe_shape.size();
+			for (unsigned int i = 0; i < shape_cout; i++)
+				mModel->mShape[i] = pqe_shape[i];
+			GenSpesicalID();					std::cout << "generat spesical id finish" << std::endl;
+			GenTextureID();						std::cout << "generat texture id finish" << std::endl;
 		}
 		else 
 		{
-			printf("Error parsing '%s': '%s'\n", path.c_str(), m_Importer.GetErrorString()); 
+			std::cout << "Error parsing " << path.c_str() <<":"<< m_Importer.GetErrorString() << std::endl;
 		}
 	}
 
 	void PQEModel::LoadMesh(const aiScene *scene)
 	{
-		unsigned int mesh_cout = 0;
-		std::vector<PQE_MESH*> pqe_mesh;
+		
 		mModel->meshNum = scene->mNumMeshes;
+		mModel->mMesh = new PQE_MESH*[mModel->meshNum];
 		for (int i = 0; i < mModel->meshNum; i++)
 		{
 			aiMesh		*mMesh = scene->mMeshes[i];
 			PQE_MESH	*pMesh = new PQE_MESH;
-			pMesh->vertexNum = mMesh->mNumVertices;
+			mModel->mMesh[i] = pMesh;
+			unsigned int mNumVertices = mMesh->mNumVertices;
+			pMesh->vertexNum = mNumVertices;
 			pMesh->faceNum = mMesh->mNumFaces*3;
 			pMesh->boneNum = mMesh->mNumBones;
 			pMesh->mMaterilIndex = mMesh->mMaterialIndex;
-
 			strcpy(pMesh->mName ,mMesh->mName.C_Str());
-			pMesh->mPosition = new glm::vec3[pMesh->vertexNum];
-			pMesh->mNormal = new glm::vec3[pMesh->vertexNum];
-			pMesh->mCoord = new glm::vec2[pMesh->vertexNum];
-			pMesh->mColor = new glm::vec4[pMesh->vertexNum];
-			pMesh->mBoneIndex = new glm::int4[pMesh->vertexNum];
-			pMesh->mBoneWeight = new glm::vec4[pMesh->vertexNum];
 			pMesh->mFace = new unsigned int[pMesh->faceNum];
-			memcpy(pMesh->mPosition, mMesh->mVertices, pMesh->vertexNum*sizeof(glm::vec3));
-			memcpy(pMesh->mNormal, mMesh->mNormals, pMesh->vertexNum * sizeof(glm::vec3));
-			const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-			for (GLuint t = 0; t < pMesh->vertexNum; t++)
-			{
-				const aiVector3D* pTexCoord = mMesh->HasTextureCoords(0) ? &(mMesh->mTextureCoords[0][t]) : &Zero3D;
-				pMesh->mCoord[t] = glm::vec2(pTexCoord->x, pTexCoord->y);
-			}
-
-			for (unsigned int t = 0; t < mMesh->mNumFaces; t++)
-			{
-				pMesh->mFace[t*3] = mMesh->mFaces[t].mIndices[0];
-				pMesh->mFace[t*3+1] = mMesh->mFaces[t].mIndices[1];
-				pMesh->mFace[t*3+2] = mMesh->mFaces[t].mIndices[2];
-			}
-
-			for (unsigned int j = 0; j < pMesh->boneNum; j++)
-			{
-				unsigned int boneindex = 0;
-				boneindex = mMatrixName[mMesh->mBones[j]->mName.C_Str()]->mMatrixIndex;
-				memcpy(&mModel->mMatrix[boneindex].mOffset, &mMesh->mBones[j]->mOffsetMatrix, sizeof(glm::mat4));
-				for (unsigned int t = 0; t < mMesh->mBones[j]->mNumWeights; t++)
-				{
-					unsigned int vertexIndex = mMesh->mBones[j]->mWeights[t].mVertexId;
-					for (unsigned int s = 0; s < 4; s++)
-					{
-						if (pMesh->mBoneWeight[vertexIndex][s]==0)
-						{	
-							pMesh->mBoneIndex[vertexIndex][s] = boneindex;
-							pMesh->mBoneWeight[vertexIndex][s] = mMesh->mBones[j]->mWeights[t].mWeight;
-							break;
-						}
-					}
-				}
-			}
-
-			pqe_mesh.push_back(pMesh);
+			pMesh->mShapeVertexIndex = new int[mNumVertices]();
 		}
-		LoadShape(mModelPath, pqe_mesh);
-		mesh_cout = pqe_mesh.size();
-		mModel->shapeNum = mesh_cout - mModel->meshNum;
-		mModel->mMesh = new PQE_MESH*[mesh_cout];
-		for (unsigned int i = 0; i < mesh_cout; i++)
-			mModel->mMesh[i] = pqe_mesh[i];
+		
 	}
 
 	void PQEModel::LoadNode(const aiScene *scen)
@@ -176,13 +134,55 @@ namespace PQE
 		unsigned int index = 0;
 		std::vector<PQE_MATRIX> vec;
 		mModel->mRootNode = new PQE_NODE;
-		LoadNodeChild(vec, scen->mRootNode, mModel->mRootNode, NULL, index);
+		LoadNodeChild(scen,vec, scen->mRootNode, mModel->mRootNode, NULL, index);
 		mModel->matrixNum = vec.size();
 		mModel->mMatrix = new PQE_MATRIX[mModel->matrixNum];
 		memcpy(mModel->mMatrix, &vec[0], mModel->matrixNum * sizeof(PQE_MATRIX));
+		LoadBoneChild(scen, scen->mRootNode, mModel->mRootNode);
+
 	}
 
-	void PQEModel::LoadNodeChild(std::vector<PQE_MATRIX> &vec, aiNode *node, PQE_NODE *pNode, PQE_NODE *pNodeParent, unsigned int &index)
+	void PQEModel::LoadBoneChild(const aiScene *scen, aiNode *node, PQE_NODE *pNode)
+	{
+		if (pNode->meshNum != 0)
+		{
+			unsigned int offestIndex = 0;
+			for (unsigned int i = 0; i < pNode->meshNum; i++)
+			{
+				aiMesh *aMesh = scen->mMeshes[pNode->mMeshIndex[i]];
+				PQE_MESH *pqe_mesh = mModel->mMesh[pNode->mMeshIndex[i]];
+				//顶点与骨骼矩阵联系
+				for (unsigned int j = 0; j < pqe_mesh->boneNum; j++)
+				{
+					unsigned int boneindex = 0;
+					boneindex = mMatrixName[aMesh->mBones[j]->mName.C_Str()]->mMatrixIndex;
+					memcpy(&mModel->mMatrix[boneindex].mOffset, &aMesh->mBones[j]->mOffsetMatrix, sizeof(glm::mat4));
+					for (unsigned int t = 0; t < aMesh->mBones[j]->mNumWeights; t++)
+					{
+						unsigned int vertexIndex = aMesh->mBones[j]->mWeights[t].mVertexId + offestIndex;
+						for (unsigned int s = 0; s < 4; s++)
+						{
+							if (pNode->mBoneWeight[vertexIndex][s] == 0)
+							{
+								pNode->mBoneIndex[vertexIndex][s] = boneindex;
+								pNode->mBoneWeight[vertexIndex][s] = aMesh->mBones[j]->mWeights[t].mWeight;
+								break;
+							}
+						}
+					}
+				}
+
+				offestIndex += aMesh->mNumVertices;
+			}
+			
+		}
+		for (unsigned int i = 0; i < pNode->childNum; i++)
+		{
+			LoadBoneChild(scen, node->mChildren[i], &pNode->mChild[i]);
+		}
+	}
+
+	void PQEModel::LoadNodeChild(const aiScene *scen,std::vector<PQE_MATRIX> &vec, aiNode *node, PQE_NODE *pNode, PQE_NODE *pNodeParent, unsigned int &index)
 	{
 		PQE_MATRIX mMatrix;
 		strcpy(pNode->mName, node->mName.C_Str());
@@ -202,11 +202,45 @@ namespace PQE
 			pNode->mType = PQE_NODE::PQE_NODE_MESH;
 			if (pNodeParent->meshNum == 0)
 				pNodeParent->mType = PQE_NODE::PQE_NODE_MESH_ROOT;
-
+			//获取顶点数据
+			unsigned int offestIndex = 0;
+			std::vector<glm::vec4> position;
+			std::vector<glm::vec3> normal;
+			std::vector<glm::vec2> coord;
+			for (unsigned int i = 0; i < pNode->meshNum; i++)
+			{
+				aiMesh *aMesh = scen->mMeshes[pNode->mMeshIndex[i]];
+				PQE_MESH *pqe_mesh = mModel->mMesh[pNode->mMeshIndex[i]];
+				for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
+				{
+					const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
+					position.push_back(glm::vec4(aMesh->mVertices[j].x, aMesh->mVertices[j].y, aMesh->mVertices[j].z,1.0f));//顶点
+					normal.push_back(glm::vec3(aMesh->mNormals[j].x, aMesh->mNormals[j].y, aMesh->mNormals[j].z));//法线
+					const aiVector3D* pTexCoord = aMesh->HasTextureCoords(0) ? &(aMesh->mTextureCoords[0][j]) : &Zero3D;
+					coord.push_back(glm::vec2(pTexCoord->x, pTexCoord->y));//纹理坐标
+				}
+				//片面的顶点索引
+				for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
+				{
+					pqe_mesh->mFace[j * 3 + 0] = aMesh->mFaces[j].mIndices[0] + offestIndex;
+					pqe_mesh->mFace[j * 3 + 1] = aMesh->mFaces[j].mIndices[1] + offestIndex;
+					pqe_mesh->mFace[j * 3 + 2] = aMesh->mFaces[j].mIndices[2] + offestIndex;
+				}
+				offestIndex += aMesh->mNumVertices;
+			}
+			pNode->vertexNum = position.size();
+			pNode->mBoneIndex = new glm::int4[pNode->vertexNum];
+			pNode->mBoneWeight = new glm::vec4[pNode->vertexNum];
+			pNode->mPosition = new glm::vec4[pNode->vertexNum];
+			pNode->mNormal = new glm::vec3[pNode->vertexNum];
+			pNode->mCoord = new glm::vec2[pNode->vertexNum];
+			memcpy(pNode->mPosition,&position[0],sizeof(glm::vec4)*position.size());
+			memcpy(pNode->mNormal, &normal[0], sizeof(glm::vec3)*position.size());
+			memcpy(pNode->mCoord, &coord[0], sizeof(glm::vec2)*position.size());
 		}
 		for (unsigned int i = 0; i < pNode->childNum; i++)
 		{
-			LoadNodeChild(vec, node->mChildren[i], &pNode->mChild[i], pNode, index+=1);
+			LoadNodeChild(scen,vec, node->mChildren[i], &pNode->mChild[i], pNode, index+=1);
 		}
 	}
 
@@ -296,67 +330,64 @@ namespace PQE
 
 	void PQEModel::GenSpesicalID()
 	{
-		mesh_vao = new unsigned int[mModel->meshNum];
-		mesh_ebo = new unsigned int[mModel->meshNum];
-		mesh_vbo_pos = new unsigned int[mModel->meshNum];
-		mesh_vbo_nor = new unsigned int[mModel->meshNum];
-		mesh_vbo_coord = new unsigned int[mModel->meshNum];
-		bone_weight_vbo = new unsigned int[mModel->meshNum];
-		bone_index_vbo = new unsigned int[mModel->meshNum];
-		shape_vbo = new unsigned int[mModel->shapeNum];
+		GenSpesicalIdChild(mModel->mRootNode);
+	}
 
-		glGenVertexArrays(mModel->meshNum, mesh_vao);
-		glGenBuffers(mModel->meshNum, mesh_ebo);
-		glGenBuffers(mModel->meshNum, mesh_vbo_pos);
-		glGenBuffers(mModel->meshNum, mesh_vbo_nor);
-		glGenBuffers(mModel->meshNum, mesh_vbo_coord);
-		glGenBuffers(mModel->meshNum, bone_weight_vbo);
-		glGenBuffers(mModel->meshNum, bone_index_vbo);
-		glGenBuffers(mModel->shapeNum, shape_vbo);
-		for (unsigned int i = 0; i < mModel->meshNum; i++)
+	void PQEModel::GenSpesicalIdChild(PQE_NODE *node)
+	{
+		if (node->vertexNum > 0)
 		{
-			glBindVertexArray(mesh_vao[i]);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh_ebo[i]);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mModel->mMesh[i]->faceNum * sizeof(unsigned int), mModel->mMesh[i]->mFace, GL_STATIC_DRAW);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo_pos[i]);
-			glBufferData(GL_ARRAY_BUFFER, mModel->mMesh[i]->vertexNum * sizeof(glm::vec3), &mModel->mMesh[i]->mPosition[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo_nor[i]);
-			glBufferData(GL_ARRAY_BUFFER, mModel->mMesh[i]->vertexNum * sizeof(glm::vec3), &mModel->mMesh[i]->mNormal[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo_coord[i]);
-			glBufferData(GL_ARRAY_BUFFER, mModel->mMesh[i]->vertexNum * sizeof(glm::vec2), &mModel->mMesh[i]->mCoord[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (GLvoid*)0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, bone_index_vbo[i]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(glm::int4) *mModel->mMesh[i]->vertexNum, mModel->mMesh[i]->mBoneIndex, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(3);
-			glVertexAttribIPointer(3, 4, GL_INT, sizeof(glm::int4), (GLvoid*)0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, bone_weight_vbo[i]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) *mModel->mMesh[i]->vertexNum, &mModel->mMesh[i]->mBoneWeight[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(4);
-			glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (GLvoid*)0);
-
-			if (mModel->mMesh[i]->mType == PQE_MESH::PQE_MESH_SHAPE_INDEX)
+			glGenBuffers(5, node->spesicalId);
+			for (unsigned int i = 0; i < node->meshNum; i++)
 			{
-				glBindBuffer(GL_ARRAY_BUFFER, shape_vbo[i]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * mModel->mMesh[i]->vertexNum, mModel->mMesh[i]->mShapeVertexIndex, GL_STATIC_DRAW);
-				glEnableVertexAttribArray(5);
-				glVertexAttribIPointer(5, 1, GL_UNSIGNED_INT, sizeof(unsigned int), (GLvoid*)0);
+				PQE_MESH *pqe_mesh = mModel->mMesh[node->mMeshIndex[i]];
+
+				glGenVertexArrays(1, &pqe_mesh->vao);
+				glBindVertexArray(pqe_mesh->vao);
+
+				glGenBuffers(1, &pqe_mesh->ebo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pqe_mesh->ebo);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, pqe_mesh->faceNum * sizeof(unsigned int), pqe_mesh->mFace, GL_STATIC_DRAW);
+	
+				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[0]);
+				glBufferData(GL_ARRAY_BUFFER, node->vertexNum * sizeof(glm::vec4), node->mPosition, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (GLvoid*)0);
+
+				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[1]);
+				glBufferData(GL_ARRAY_BUFFER, node->vertexNum * sizeof(glm::vec3), node->mNormal, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
+
+				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[2]);
+				glBufferData(GL_ARRAY_BUFFER, node->vertexNum * sizeof(glm::vec2), node->mCoord, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(2);
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (GLvoid*)0);
+
+				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[3]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(glm::int4) *node->vertexNum, node->mBoneIndex, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(3);
+				glVertexAttribIPointer(3, 4, GL_INT, sizeof(glm::int4), (GLvoid*)0);
+
+				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[4]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) *node->vertexNum, &node->mBoneWeight[0], GL_STATIC_DRAW);
+				glEnableVertexAttribArray(4);
+				glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (GLvoid*)0);
+
+				//glBindBuffer(GL_ARRAY_BUFFER, shape_vbo[node->mMeshIndex[i]]);
+				//glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * pqe_mesh->vertexNum, mModel->mMesh[i]->mShapeVertexIndex, GL_STATIC_DRAW);
+				//glEnableVertexAttribArray(5);
+				//glVertexAttribIPointer(5, 1, GL_INT, sizeof(int), (GLvoid*)0);
+
+				glBindVertexArray(0);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			}
 		}
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		for (unsigned int i = 0; i < node->childNum; i++)
+		{
+			GenSpesicalIdChild(&node->mChild[i]);
+		}
 	}
 
 	void PQEModel::GenTextureID()
@@ -377,6 +408,7 @@ namespace PQE
 
 	void PQEModel::GenShapeGpuData(std::vector<glm::vec3> &pos,PQE_NODE *node, unsigned int &shapeVertexCout)
 	{
+		/*
 		if (node->shapeNum)
 		{
 			node->shapeVertexNum = shapeVertexCout;
@@ -388,16 +420,42 @@ namespace PQE
 			PQE_MESH *mesh = mModel->mMesh[node->mShapeIndex[i]];
 			for (unsigned int j = 0;j < mesh->vertexNum;j++)
 			{
-				pos.push_back(mesh->mPosition[j]);
+				pos.push_back(glm::vec3(mesh->mPosition[j].x,mesh->mPosition[j].y, mesh->mPosition[j].z));
 			}
 		}
 		for (unsigned int i = 0;i < node->childNum;i++)
 		{
 			GenShapeGpuData(pos, &node->mChild[i], shapeVertexCout);
 		}
+		*/
 	}
 
 	void PQEModel::Render(shader *mshader)
+	{
+		unsigned int cout = this->mModel->meshNum;
+		if (!mshader)
+			return;
+		mshader->use();
+		SetBoneSSAOId(mshader->createShaderStorageBufferObject(1, sizeof(glm::mat4)*GetModel()->matrixNum, NULL, GL_DYNAMIC_COPY));
+		if (bone_ssao)
+		{
+			glm::mat4 *matrixDate = new glm::mat4[this->mModel->matrixNum];
+			ComputeBoneMatrix(this->mModel->mRootNode, glm::mat4(1.0f), matrixDate);
+			std::vector<glm::mat4> mtt;
+			for (int i = 0; i < mModel->matrixNum; i++)
+			{
+				mtt.push_back(glm::mat4(1.0f));
+			}
+			mshader->setShaderStorageBufferObjectData(*this->bone_ssao,this->mModel->matrixNum*sizeof(glm::mat4), &mtt[0]);
+			delete[] matrixDate;
+		}
+		RenderChild(this->mModel->mRootNode, mshader);
+		glDeleteBuffers(1, this->bone_ssao);
+		
+		
+	}
+
+	void PQEModel::Render2(shader *mshader)
 	{
 		unsigned int cout = this->mModel->meshNum;
 		if (mshader)
@@ -406,17 +464,29 @@ namespace PQE
 			if (bone_ssao)
 			{
 				glm::mat4 *matrixDate = new glm::mat4[this->mModel->matrixNum];
-				ComputeBoneMatrix(this->mModel->mRootNode, glm::mat4(1.0f), matrixDate);
+				//ComputeBoneMatrix(this->mModel->mRootNode, glm::mat4(1.0f), matrixDate);
 				std::vector<glm::mat4> mtt;
 				for (int i = 0; i < mModel->matrixNum; i++)
 				{
 					mtt.push_back(matrixDate[i]);
 				}
-				mshader->setShaderStorageBufferObjectData(*this->bone_ssao,this->mModel->matrixNum*sizeof(glm::mat4),matrixDate);
+				//mshader->setShaderStorageBufferObjectData(*this->bone_ssao, this->mModel->matrixNum * sizeof(glm::mat4), matrixDate);
 				delete[] matrixDate;
 			}
+			PQE_MESH ** mesh = this->mModel->mMesh;
+			for (unsigned int meshCout = 0; meshCout < cout; meshCout++)
+			{
+				PQE_MATERIAL *mat = &mModel->mMaterial[mesh[meshCout]->mMaterilIndex];
+				glActiveTexture(GL_TEXTURE0);
+				for (unsigned int j = 0; j < mat->textureNum; j++)
+				{
+					glBindTexture(GL_TEXTURE_2D, mModel->mTexture[mat->mTextureIndex[j]].mId);
+				}
+				glBindVertexArray(mesh_vao[meshCout]);
+				glDrawElements(GL_TRIANGLES, mesh[meshCout]->faceNum, GL_UNSIGNED_INT, 0);
+			}
 		}
-		RenderChild(this->mModel->mRootNode, mshader);
+		
 	}
 
 	void PQEModel::RenderChild(PQE_NODE *node, shader *mshader)
@@ -426,37 +496,53 @@ namespace PQE
 		unsigned int weightCount = 0;
 		if (node->mType == PQE_NODE::PQE_NODE_MESH|| node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
 		{
-			if (mshader&&shape_ssao&&node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
+			if (mshader&&node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
 			{
-				shapeNodeVertexCount = node->shapeVertexNum;
-				shpaeVertexCount = mModel->mMesh[node->mShapeIndex[0]]->vertexNum;
 				weightCount = node->shapeNum;
 				float *weight = new float[weightCount];
+				PQE_SHAPE *shpae = mModel->mShape[node->mShapeIndex[0]];
+				shpaeVertexCount = shpae->vertexNum;
+				shapeNodeVertexCount = node->shapeNum*shpaeVertexCount;
+				glm::vec4 *shapeVertex = new glm::vec4[sizeof(glm::vec4)*shapeNodeVertexCount];
+				SetShapeSSAOId(mshader->createShaderStorageBufferObject(2, sizeof(glm::vec4) *shapeNodeVertexCount, NULL, GL_DYNAMIC_COPY));
+				SetShapeWeightSSAOId(mshader->createShaderStorageBufferObject(0, sizeof(float) * weightCount, NULL, GL_DYNAMIC_COPY));
 				for (unsigned int i= 0;i < node->shapeNum;i++)
 				{
-					weight[i] = mModel->mMesh[node->mShapeIndex[i]]->mShapeWeight;
+					shpae = mModel->mShape[node->mShapeIndex[i]];
+					weight[i] = shpae->weight;
+					weight[i] = 0.0f;
+					if (i == 0)
+					{
+						weight[i] = 0.5f;
+					}
+
+					memcpy(shapeVertex + shpaeVertexCount *i, &shpae->mPosition[0], shpaeVertexCount * sizeof(glm::vec4));
 				}
+				mshader->setShaderStorageBufferObjectData(*this->shape_ssao, sizeof(glm::vec4)*shapeNodeVertexCount, shapeVertex);
 				mshader->setShaderStorageBufferObjectData(*this->shape_weight_ssao, weightCount* sizeof(float), weight);
 				delete[] weight;
+				delete[] shapeVertex;
 			}
-			mshader->setFloat("shape_data.shapeNodeVertexCount", shapeNodeVertexCount);
-			mshader->setFloat("shape_data.vertexCount", shpaeVertexCount);
-			mshader->setFloat("shape_data.weightCount", weightCount);
+			mshader->setInt("shape_data.shapeNodeVertexCount", shapeNodeVertexCount);
+			mshader->setInt("shape_data.vertexCount", shpaeVertexCount);
+			mshader->setInt("shape_data.weightCount", weightCount);
 			for (unsigned int i = 0; i < node->meshNum; i++)
 			{
 				unsigned int meshIndex=node->mMeshIndex[i];
+				PQE_MESH* mesh = mModel->mMesh[node->mMeshIndex[i]];
 				PQE_MATERIAL *mat = &mModel->mMaterial[mModel->mMesh[meshIndex]->mMaterilIndex];
 				glActiveTexture(GL_TEXTURE0);
 				for (unsigned int j = 0; j < mat->textureNum; j++)
 				{
 					glBindTexture(GL_TEXTURE_2D, mModel->mTexture[mat->mTextureIndex[j]].mId);
 				}
-				glBindVertexArray(mesh_vao[meshIndex]);
+				glBindVertexArray(mesh->vao);
 				glDrawElements(GL_TRIANGLES, mModel->mMesh[meshIndex]->faceNum, GL_UNSIGNED_INT, 0);
 			}
+			glDeleteBuffers(1, this->shape_ssao);
+			glDeleteBuffers(1, this->shape_weight_ssao);
 		}
 		for (unsigned int i = 0; i < node->childNum; i++)
-			//if (node->mType == PQE_NODE::PQE_NODE_MESH_ROOT)
 				RenderChild(&node->mChild[i], mshader);
 	}
 
@@ -559,7 +645,7 @@ namespace PQE
 			return &mModel->mMatrix[nodeCopy->mMatrixIndex];
 	}
 
-	void PQEModel::LoadShape(std::string path, std::vector<PQE_MESH*> &shape)
+	void PQEModel::LoadShape(std::string path, std::vector<PQE_SHAPE*> &shape)
 	{
 		FbxManager * mSdkManagerFbx;
 		FbxScene * mSceneFbx;
@@ -578,15 +664,16 @@ namespace PQE
 			{
 				bool lResult = mImporterFbx->Import(mSceneFbx);
 				if (lResult)
+				{
 					LoadFbxNode(mSceneFbx->GetRootNode(), shape);
+
+				}
 				mImporterFbx->Destroy();
 				mSceneFbx->Destroy();
 				mSdkManagerFbx->Destroy();
-				printf("读取shape完成\n");
 				return;
 			}
 		}
-		printf("读取shape失败\n");
 	}
 
 	void PQEModel::InitFbxSdk(FbxManager *&pManager, FbxScene *&pScene)
@@ -612,7 +699,7 @@ namespace PQE
 		}
 	}
 
-	void PQEModel::LoadFbxNode(FbxNode* pNode, std::vector<PQE_MESH*> &shape)
+	void PQEModel::LoadFbxNode(FbxNode* pNode, std::vector<PQE_SHAPE*> &shape)
 	{
 		if (pNode->GetNodeAttribute())
 		{
@@ -630,10 +717,10 @@ namespace PQE
 	
 	}
 
-	void PQEModel::LoadFbxMesh(FbxNode* pNode, std::vector<PQE_MESH*> &shape)
+	void PQEModel::LoadFbxMesh(FbxNode* pNode, std::vector<PQE_SHAPE*> &shape)
 	{
 		FbxMesh* lMesh = pNode->GetMesh();
-		std::vector<glm::vec3> sd;
+		std::vector<glm::vec4> sd;
 		
 		const int lVertexCount = lMesh->GetControlPointsCount();
 		const bool lHasShape = lMesh->GetShapeCount() > 0;
@@ -643,15 +730,16 @@ namespace PQE
 			if (!pqe_node)return;
 			for (int i = 0; i < lVertexCount; i++)
 			{
-				sd.push_back(glm::vec3(lMesh->GetControlPoints()[i][0], lMesh->GetControlPoints()[i][1], lMesh->GetControlPoints()[i][2]));
+				sd.push_back(glm::vec4(lMesh->GetControlPoints()[i][0], lMesh->GetControlPoints()[i][1], lMesh->GetControlPoints()[i][2],1.0f));
 			}
 			LoadFbxShapeVertexIndex(pqe_node, shape, sd);
 			LoadFbxShape(lMesh, pqe_node, shape);
 			pqe_node->mType = PQE_NODE::PQE_NODE_MESH_SHAPE;
+			sddd = sd;
 		}
 	}
 
-	void PQEModel::LoadFbxShape(FbxMesh* pMesh, PQE_NODE *pqe_node, std::vector<PQE_MESH*> &shape)
+	void PQEModel::LoadFbxShape(FbxMesh* pMesh, PQE_NODE *pqe_node, std::vector<PQE_SHAPE*> &shape)
 	{
 		std::vector<unsigned int> shapeNum;
 		unsigned int shapeTotle= shape.size();
@@ -672,18 +760,15 @@ namespace PQE
 					{
 						FbxShape *fbxShape = lChannel->GetTargetShape(i);
 						int num = fbxShape->GetControlPointsCount();
-						std::vector<glm::vec3> vv;
+						PQE_SHAPE *pqe_shape = new PQE_SHAPE;
+						pqe_shape->mPosition = new glm::vec4[num];
 						for (int i = 0; i < num; i++)
 						{
-							vv.push_back(glm::vec3(fbxShape->GetControlPoints()[i][0], fbxShape->GetControlPoints()[i][1], fbxShape->GetControlPoints()[i][2]));
+							pqe_shape->mPosition[i] = glm::vec4(fbxShape->GetControlPoints()[i][0], fbxShape->GetControlPoints()[i][1], fbxShape->GetControlPoints()[i][2], 1.0f);
 						}
-						PQE_MESH *pqe_mesh = new PQE_MESH;
-						strcpy(pqe_mesh->mName , lChannel->GetName());
-						pqe_mesh->mType = PQE_MESH::PQE_MESH_SHAPE;
-						pqe_mesh->vertexNum = vv.size();
-						pqe_mesh->mPosition = new glm::vec3[pqe_mesh->vertexNum];
-						memcpy(pqe_mesh->mPosition, &vv[0], pqe_mesh->vertexNum*sizeof(glm::vec3));
-						shape.push_back(pqe_mesh);
+						strcpy(pqe_shape->mName , lChannel->GetName());
+						pqe_shape->vertexNum = num;
+						shape.push_back(pqe_shape);
 						shapeNum.push_back(shapeTotle);
 						shapeTotle++;
 					}
@@ -696,23 +781,15 @@ namespace PQE
 		memcpy(pqe_node->mShapeIndex, &shapeNum[0], pqe_node->shapeNum*sizeof(unsigned int));
 	}
 
-	void PQEModel::LoadFbxShapeVertexIndex(PQE_NODE *pqe_node, std::vector<PQE_MESH*> &shape, std::vector<glm::vec3> &vertex)
+	void PQEModel::LoadFbxShapeVertexIndex(PQE_NODE *pqe_node, std::vector<PQE_SHAPE*> &shape, std::vector<glm::vec4> &vertex)
 	{
-		unsigned int mesh_cout = pqe_node->meshNum;
-		for (int t = 0; t < mesh_cout; t++)
+		int vertexCout = pqe_node->vertexNum;
+		//pqe_mesh->mType = PQE_MESH::PQE_MESH_SHAPE_INDEX;
+		for (int i = 0; i < vertexCout; i++)
 		{
-			PQE_MESH *pqe_mesh = shape[pqe_node->mMeshIndex[t]];
-			if (pqe_mesh == NULL)return;
-			int vertexCout = pqe_mesh->vertexNum;
-			pqe_mesh->mShapeVertexIndex = new int[vertexCout];
-			pqe_mesh->mType = PQE_MESH::PQE_MESH_SHAPE_INDEX;
-			for (int i = 0; i < vertexCout; i++)
-			{
-				vector<glm::vec3>::iterator location_index = std::find(vertex.begin(), vertex.end(), pqe_mesh->mPosition[i]);
-				int index = location_index - vertex.begin();
-				if (vertex.end() == location_index) index = -1;
-				pqe_mesh->mShapeVertexIndex[i] = index;
-			}
+			vector<glm::vec4>::iterator location_index = std::find(vertex.begin(), vertex.end(), pqe_node->mPosition[i]);
+			int index = location_index - vertex.begin();
+			pqe_node->mPosition[i].w = index;
 		}
 	}
 
