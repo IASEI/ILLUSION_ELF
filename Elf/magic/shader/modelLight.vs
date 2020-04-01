@@ -53,7 +53,6 @@ void main()
 		boneTransform+=BM[BoneIDs[1]]*Weights[1];
 		boneTransform+=BM[BoneIDs[2]]*Weights[2];
 		boneTransform+=BM[BoneIDs[3]]*Weights[3];
-		boneTransform=mat4(1.0f);
 		for(int i=0;i<shape_data.weightCount;i++)
 		{
 			vec4 influence=(data[i*shape_data.vertexCount+int(position.w)]-position)*shapeWeight[i];

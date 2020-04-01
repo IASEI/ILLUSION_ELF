@@ -166,7 +166,6 @@ namespace PQE
 							{
 								pNode->mBoneIndex[vertexIndex][s] = boneindex;
 								pNode->mBoneWeight[vertexIndex][s] = aMesh->mBones[j]->mWeights[t].mWeight;
-								break;
 							}
 						}
 					}
@@ -370,7 +369,7 @@ namespace PQE
 				glVertexAttribIPointer(3, 4, GL_INT, sizeof(glm::int4), (GLvoid*)0);
 
 				glBindBuffer(GL_ARRAY_BUFFER, node->spesicalId[4]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) *node->vertexNum, &node->mBoneWeight[0], GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) *node->vertexNum, node->mBoneWeight, GL_STATIC_DRAW);
 				glEnableVertexAttribArray(4);
 				glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (GLvoid*)0);
 
@@ -432,6 +431,7 @@ namespace PQE
 
 	void PQEModel::Render(shader *mshader)
 	{
+		glm::mat4 *matrixDate = NULL;
 		unsigned int cout = this->mModel->meshNum;
 		if (!mshader)
 			return;
@@ -439,20 +439,18 @@ namespace PQE
 		SetBoneSSAOId(mshader->createShaderStorageBufferObject(1, sizeof(glm::mat4)*GetModel()->matrixNum, NULL, GL_DYNAMIC_COPY));
 		if (bone_ssao)
 		{
-			glm::mat4 *matrixDate = new glm::mat4[this->mModel->matrixNum];
+			matrixDate = new glm::mat4[this->mModel->matrixNum];
 			ComputeBoneMatrix(this->mModel->mRootNode, glm::mat4(1.0f), matrixDate);
 			std::vector<glm::mat4> mtt;
 			for (int i = 0; i < mModel->matrixNum; i++)
 			{
 				mtt.push_back(glm::mat4(1.0f));
 			}
-			mshader->setShaderStorageBufferObjectData(*this->bone_ssao,this->mModel->matrixNum*sizeof(glm::mat4), &mtt[0]);
-			delete[] matrixDate;
+			mshader->setShaderStorageBufferObjectData(*this->bone_ssao,this->mModel->matrixNum*sizeof(glm::mat4), matrixDate);
 		}
 		RenderChild(this->mModel->mRootNode, mshader);
 		glDeleteBuffers(1, this->bone_ssao);
-		
-		
+		delete[] matrixDate;
 	}
 
 	void PQEModel::Render2(shader *mshader)
@@ -494,9 +492,10 @@ namespace PQE
 		unsigned int shapeNodeVertexCount = 0;
 		unsigned int shpaeVertexCount = 0;
 		unsigned int weightCount = 0;
-		if (node->mType == PQE_NODE::PQE_NODE_MESH|| node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
+		bool isShape = false;
+		if (node->meshNum>0)
 		{
-			if (mshader&&node->mType == PQE_NODE::PQE_NODE_MESH_SHAPE)
+			if (mshader&& node->shapeNum)
 			{
 				weightCount = node->shapeNum;
 				float *weight = new float[weightCount];
@@ -520,6 +519,7 @@ namespace PQE
 				}
 				mshader->setShaderStorageBufferObjectData(*this->shape_ssao, sizeof(glm::vec4)*shapeNodeVertexCount, shapeVertex);
 				mshader->setShaderStorageBufferObjectData(*this->shape_weight_ssao, weightCount* sizeof(float), weight);
+				isShape = true;
 				delete[] weight;
 				delete[] shapeVertex;
 			}
@@ -539,8 +539,12 @@ namespace PQE
 				glBindVertexArray(mesh->vao);
 				glDrawElements(GL_TRIANGLES, mModel->mMesh[meshIndex]->faceNum, GL_UNSIGNED_INT, 0);
 			}
-			glDeleteBuffers(1, this->shape_ssao);
-			glDeleteBuffers(1, this->shape_weight_ssao);
+			if (isShape)
+			{
+				glDeleteBuffers(1, this->shape_ssao);
+				glDeleteBuffers(1, this->shape_weight_ssao);
+			}
+			
 		}
 		for (unsigned int i = 0; i < node->childNum; i++)
 				RenderChild(&node->mChild[i], mshader);
