@@ -4,7 +4,6 @@
 #include "PQEModel.h"
 
 namespace PQE
-
 {
 	class PQEExport
 	{
