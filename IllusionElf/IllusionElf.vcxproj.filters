@@ -99,6 +99,9 @@
     <ClInclude Include="..\Elf\include\PQE\PlugIn.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="PQEExport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IllusionElf.cpp">
@@ -166,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\Elf\include\PQE\PlugInContainer.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="PQEExport.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

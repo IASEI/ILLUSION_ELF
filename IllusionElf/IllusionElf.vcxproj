@@ -148,6 +148,7 @@
     <ClInclude Include="..\Elf\include\PQE\TimerTask.h" />
     <ClInclude Include="..\Elf\QdeRender.h" />
     <ClInclude Include="IllusionElf.h" />
+    <ClInclude Include="PQEExport.h" />
     <ClInclude Include="PQEModel.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClCompile Include="..\Elf\include\PQE\TimerTask.cpp" />
     <ClCompile Include="..\Elf\QdeRender.cpp" />
     <ClCompile Include="IllusionElf.cpp" />
+    <ClCompile Include="PQEExport.cpp" />
     <ClCompile Include="PQEModel.cpp" />
   </ItemGroup>
   <ItemGroup>

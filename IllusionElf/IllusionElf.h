@@ -37,6 +37,14 @@ public:
 		mShader->setVec3("carmePos", glm::vec3(0.0f));
 		mShader->setMat4("model", glm::rotate(glm::rotate(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)), glm::vec3(0.0f, -100.0f, -100.0f)), glm::radians(i), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		model->Render(mShader);
+		int a[100];
+		std::vector<int> aa;
+		for (int i = 0; i < 100; i++)
+		{
+			a[i] = i;
+		}
+		aa.resize(100);
+		memcpy(&aa[0],a,100*sizeof(int));
 		//look.useMouse();
 	}
 
