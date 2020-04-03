@@ -149,7 +149,9 @@
     <ClInclude Include="..\Elf\QdeRender.h" />
     <ClInclude Include="IllusionElf.h" />
     <ClInclude Include="PQEExport.h" />
+    <ClInclude Include="PQEImport.h" />
     <ClInclude Include="PQEModel.h" />
+    <ClInclude Include="PQERender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Elf\DimmensionWorldConsole.cpp" />
@@ -174,7 +176,9 @@
     <ClCompile Include="..\Elf\QdeRender.cpp" />
     <ClCompile Include="IllusionElf.cpp" />
     <ClCompile Include="PQEExport.cpp" />
+    <ClCompile Include="PQEImport.cpp" />
     <ClCompile Include="PQEModel.cpp" />
+    <ClCompile Include="PQERender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Elf\magic\shader\modelLight.fs" />

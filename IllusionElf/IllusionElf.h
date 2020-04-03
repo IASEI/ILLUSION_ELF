@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Shadow.h"
 #include "PQEModel.h"
+#include "PQEExport.h"
 
 class IllusionElf :public DimmensionWorldConsole
 {
@@ -21,8 +22,11 @@ public:
 		mShader->setMat4("lightSpaceMatrix", shadow.getLightSpaceMatrix());
 		IE_MODEL.mshader = mShader;
 		//IE_MODEL.load("miku.fbx");
+		//PQE::PQEExport Export("aa.txt");
 
 		model = new PQE::PQEModel("miku.fbx");
+		//PQE::PQEExport Export(model->GetModel(),"aa.txt");
+		//model->setModel(Export.getm()) ;
 		printf("-----------------\n");
 	}
 

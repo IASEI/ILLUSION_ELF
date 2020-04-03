@@ -102,6 +102,12 @@
     <ClInclude Include="PQEExport.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PQEImport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PQERender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IllusionElf.cpp">
@@ -171,6 +177,12 @@
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="PQEExport.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PQEImport.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PQERender.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
