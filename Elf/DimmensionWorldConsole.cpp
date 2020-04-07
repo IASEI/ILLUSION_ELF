@@ -1,6 +1,6 @@
 #include "DimmensionWorldConsole.h"
 
-DimmensionWorldConsole::DimmensionWorldConsole() :mExit(false), mName(""), mClearColor(glm::vec4(0.1, 0.1, 0.1, 1.0f)), mScreenWidth(1920), mScreenHeight(1079)
+DimmensionWorldConsole::DimmensionWorldConsole() :mExit(false), mName(""), mClearColor(glm::vec4(0.1, 0.1, 0.1, 1.0f)), mScreenWidth(800), mScreenHeight(460)
 {
 
 }

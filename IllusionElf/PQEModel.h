@@ -18,10 +18,31 @@ namespace PQE
 	class PQE_SHAPE;
 	class AABB;
 
+	class PQEExport;
+	class PQEImport;
+
+
+	enum PQE_MODEL_TYPE
+	{
+		PQE_MODEL_FBX,
+		PQE_MODEL_ASE,
+		PQE_MODEL_OTHER
+	};
+
+
 	class PQE_MODEL
 	{
 	public:
 		PQE_MODEL();
+		void SetMatrix(PQE_MATRIX *matrix, glm::mat4 *mat);
+		void SetMatrix(PQE_NODE *node, glm::mat4 *mat);
+		void SetMatrix(std::string name, glm::mat4 *mat);
+		void GenSpesicalID();
+		void GenTextureID();
+		void ComputeBoneMatrix(PQE_NODE *node, glm::mat4 parent, glm::mat4 *data);
+		PQE_NODE *FindNode(std::string name);
+		PQE_MATRIX *FindMatrix(std::string name);
+		PQE_MODEL *operator=(PQEImport& mImport);
 		~PQE_MODEL();
 	public:
 		unsigned int        		nodeNum;		//节点数量
@@ -87,8 +108,6 @@ namespace PQE
 		glm::mat4			mOffset;		//节点偏移矩阵
 	};
 
-	
-
 	class PQE_MESH
 	{
 	public:
@@ -115,7 +134,6 @@ namespace PQE
 		std::vector<unsigned int>		mFace;			//面
 		AABB				*aabb;			//aabb包围盒
 	};
-	
 
 	class PQE_SHAPE
 	{
@@ -158,6 +176,8 @@ namespace PQE
 		PQE_TEXTURE_TYPE	mType;			//纹理类型
 		char				mPath[255];		//纹理路径
 	};
+
+	
 
 }
 

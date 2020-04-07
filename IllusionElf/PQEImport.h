@@ -10,6 +10,10 @@ namespace PQE
 	{
 	public:
 		PQEImport(std::string path);
+		PQE_MODEL *GetModel();
+		~PQEImport();
+	private:
+		void LoadModel(std::string path);
 		void LoadNode(const aiScene *scene);		//读取节点
 		void LoadMesh(const aiScene *scene);		//读取网格
 		void LoadMaterial(const aiScene *scene);	//读取材质
@@ -24,7 +28,6 @@ namespace PQE
 		inline void LoadFbxMesh(FbxNode* pNode, std::vector<PQE_SHAPE> &shape);
 		inline void LoadFbxShape(FbxMesh* pMesh, PQE_NODE *pqe_node, std::vector<PQE_SHAPE> &shape);
 		inline void LoadFbxShapeVertexIndex(PQE_NODE *pqe_node, std::vector<PQE_SHAPE> &shape, std::vector<glm::vec4> &vertex);
-
 		//----------------------------------------------------------------------------------------
 		void LoadPQE(std::string path);
 		void LoadPQENode();
@@ -33,11 +36,9 @@ namespace PQE
 		void LoadPQEShape();
 		void LoadPQEMaterial();
 		void LoadPQETexture();
-
-		PQE_NODE *FindNode(std::string name);
-		PQE_MODEL *GetModel();
-		~PQEImport();
+		//----------------------------------------------------------------------------------------
 	private:
+		bool mIsFbx;
 		PQE_MODEL *mModel;
 		std::fstream *file;
 		std::string mModelPath;

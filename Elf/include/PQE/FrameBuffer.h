@@ -60,7 +60,7 @@ public:
 
 		glGenRenderbuffers(1, &frame.rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER, frame.rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mViewWidth, mViewHeight); // use a single renderbuffer object for both a depth AND stencil buffer.
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mViewWidth, mViewHeight); // use a single render buffer object for both a depth AND stencil buffer.
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, frame.rbo); // now actually attach it
 																									  // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

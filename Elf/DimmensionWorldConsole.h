@@ -1,7 +1,6 @@
 #ifndef __DIMMENSIONWORLDCONSOLE_H__
 #define __DIMMENSIONWORLDCONSOLE_H__
 
-#include "fantastic.h"
 #include "PurpleDreamElf.h"
 #include "PlugInContainer.h"
 #include "imgui_impl_glfw.h"

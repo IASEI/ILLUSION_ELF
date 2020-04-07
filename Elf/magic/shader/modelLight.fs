@@ -31,6 +31,7 @@ in      vec2                mTexCoords;
 in      vec3                mNormals;
 in      vec3                mFragPos;
 in      vec4                mFragPosLightSpace;
+
 uniform sampler2D           mShadowMap;
 uniform vec3                mCarmePos;
 uniform vec3                mLightPos;

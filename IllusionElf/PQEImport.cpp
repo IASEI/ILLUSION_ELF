@@ -6,23 +6,39 @@ namespace PQE
 	{
 		this->mModelPath = path;
 		this->mModel = new PQE_MODEL;
+		std::string type = path.substr(path.find_last_of(".") + 1);
+		this->mIsFbx = false;
+		if (type == "ase")
+		{
+			LoadPQE(path);
+		}
+		else
+		{
+			if (type == "fbx") this->mIsFbx = true;
+			LoadModel(path);
+		}
+	}
+
+	void PQEImport::LoadModel(std::string path)
+	{
 		Assimp::Importer m_Importer;
 		const aiScene* m_pScene = m_Importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 		if (!m_pScene || m_pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_pScene->mRootNode) { std::cout << "ERROR::ASSIMP:: " << m_Importer.GetErrorString() << std::endl; return; }
 		std::cout << "start load model" << std::endl;
 		if (m_pScene)
 		{
-			LoadMesh(m_pScene);					std::cout << "load mesh finish" << std::endl;
-			LoadNode(m_pScene);					std::cout << "load node finish" << std::endl;
-			LoadMaterial(m_pScene);				std::cout << "load material finish" << std::endl;
-			LoadShape(mModelPath, mModel->mShape);	std::cout << "load shape finish" << std::endl;
+			LoadMesh(m_pScene);										std::cout << "load mesh finish" << std::endl;
+			LoadNode(m_pScene);										std::cout << "load node finish" << std::endl;
+			LoadMaterial(m_pScene);									std::cout << "load material finish" << std::endl;
+			if(this->mIsFbx)LoadShape(mModelPath, mModel->mShape);	std::cout << "load shape finish" << std::endl;
 		}
 		else
 		{
 			std::cout << "Error parsing " << path.c_str() << ":" << m_Importer.GetErrorString() << std::endl;
 		}
+		//delete m_pScene;
 	}
-	
+
 	void PQEImport::LoadMesh(const aiScene *scene)
 	{
 
@@ -318,7 +334,7 @@ namespace PQE
 		const bool lHasShape = lMesh->GetShapeCount() > 0;
 		if (lHasShape)
 		{
-			PQE_NODE *pqe_node = FindNode(pNode->GetName());
+			PQE_NODE *pqe_node = this->mModel->FindNode(pNode->GetName());
 			if (!pqe_node)return;
 			for (int i = 0; i < lVertexCount; i++)
 			{
@@ -328,18 +344,6 @@ namespace PQE
 			LoadFbxShape(lMesh, pqe_node, shape);
 			pqe_node->mType = PQE_NODE::PQE_NODE_MESH_SHAPE;
 		}
-	}
-
-	PQE_NODE *PQEImport::FindNode(std::string name)
-	{
-		for (unsigned int i = 0; i < this->mModel->nodeNum; i++)
-		{
-			if (this->mModel->mNode[i].mName == name)
-			{
-				return &this->mModel->mNode[i];
-			}
-		}
-		return NULL;
 	}
 
 	void PQEImport::LoadFbxShape(FbxMesh* pMesh, PQE_NODE *pqe_node, std::vector<PQE_SHAPE> &shape)
@@ -394,41 +398,37 @@ namespace PQE
 		}
 	}
 
-	PQE_MODEL *PQEImport::GetModel()
-	{
-		return this->mModel;
-	}
-
+	//----------------------------------------------------------------------------------------
 	void PQEImport::LoadPQE(std::string path)
 	{
 		file = new std::fstream;
 		file->open(path, ios::in | ios::binary);
 		if (file->fail())
 		{
-			std::cout << "save failure" << endl;
+			std::cout << "load failure" << endl;
 			return;
 		}
 
 		this->mModel = new PQE_MODEL;
-		std::cout << "start save" << endl;
-		file->read((char*)&this->mModel->nodeNum, sizeof(unsigned int)); 		std::cout << "start save nodeNum successful" << endl;
-		file->read((char*)&this->mModel->meshNum, sizeof(unsigned int)); 		std::cout << "start save meshNum successful" << endl;
-		file->read((char*)&this->mModel->shapeNum, sizeof(unsigned int)); 		std::cout << "start save shapeNum successful" << endl;
-		file->read((char*)&this->mModel->matrixNum, sizeof(unsigned int)); 		std::cout << "start save matrixNum successful" << endl;
-		file->read((char*)&this->mModel->textureNum, sizeof(unsigned int)); 	std::cout << "start save textureNum successful" << endl;
-		file->read((char*)&this->mModel->materialNum, sizeof(unsigned int)); 	std::cout << "start save materialNum successful" << endl;
+		std::cout << "start load" << endl;
+		file->read((char*)&this->mModel->nodeNum, sizeof(unsigned int)); 		std::cout << "start load nodeNum finish" << endl;
+		file->read((char*)&this->mModel->meshNum, sizeof(unsigned int)); 		std::cout << "start load meshNum finish" << endl;
+		file->read((char*)&this->mModel->shapeNum, sizeof(unsigned int)); 		std::cout << "start load shapeNum finish" << endl;
+		file->read((char*)&this->mModel->matrixNum, sizeof(unsigned int)); 		std::cout << "start load matrixNum finish" << endl;
+		file->read((char*)&this->mModel->textureNum, sizeof(unsigned int)); 	std::cout << "start load textureNum finish" << endl;
+		file->read((char*)&this->mModel->materialNum, sizeof(unsigned int)); 	std::cout << "start load materialNum finish" << endl;
 		this->mModel->mNode.resize(this->mModel->nodeNum);
 		this->mModel->mMesh.resize(this->mModel->meshNum);
 		this->mModel->mShape.resize(this->mModel->shapeNum);
 		this->mModel->mMatrix.resize(this->mModel->matrixNum);
 		this->mModel->mTexture.resize(this->mModel->textureNum);
 		this->mModel->mMaterial.resize(this->mModel->materialNum);
-		LoadPQENode();		std::cout << "start save Node successful" << endl;
-		LoadPQEMesh();		std::cout << "start save Mesh successful" << endl;
-		LoadPQEShape();		std::cout << "start save Shape successful" << endl;
-		LoadPQEMatrix();		std::cout << "start save Matrix successful" << endl;
-		LoadPQETexture();	std::cout << "start save Texture successful" << endl;
-		LoadPQEMaterial();	std::cout << "start save Material successful" << endl;
+		LoadPQENode();		std::cout << "start load Node finish" << endl;
+		LoadPQEMesh();		std::cout << "start load Mesh finish" << endl;
+		LoadPQEShape();		std::cout << "start load Shape finish" << endl;
+		LoadPQEMatrix();	std::cout << "start load Matrix finish" << endl;
+		LoadPQETexture();	std::cout << "start load Texture finish" << endl;
+		LoadPQEMaterial();	std::cout << "start load Material finish" << endl;
 		file->close();
 	}
 
@@ -525,8 +525,16 @@ namespace PQE
 		file->read((char*)&this->mModel->mTexture[0], this->mModel->textureNum * sizeof(PQE_TEXTURE));
 	}
 
+	PQE_MODEL *PQEImport::GetModel()
+	{
+		return this->mModel;
+	}
+
 	PQEImport::~PQEImport()
 	{
 
 	}
+
+	//----------------------------------------------------------------------------------------
+	
 }

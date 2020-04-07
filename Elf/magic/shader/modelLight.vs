@@ -8,17 +8,29 @@ layout (location = 3) in ivec4 BoneIDs;
 layout (location = 4) in vec4  Weights;
 layout (location = 5) in uint  ShapeVertexIndex;
 
-layout(std430,binding = 0,row_major) buffer ShapeWeight
+//系统属性
+layout(std430,binding = 0,row_major) buffer mSystem 
+{
+	mat4 mSpace;				//空间大小比例矩阵，以miku模型为标准
+    mat4 mLightSpace;			//光照空间
+	vec3 mLightLocation;		//光位置
+	vec3 mLightDirection;		//光线方向
+	vec3 mLightAmbient;
+	vec3 mLightDiffuse;
+	vec3 mLightSpecular;
+};
+
+layout(std430,binding = 1,row_major) buffer ShapeWeight
 {
     float shapeWeight[];
 };
 
-layout(std430,binding = 1,row_major) buffer Matrix
+layout(std430,binding = 2,row_major) buffer Matrix
 {
     mat4 BM[];
 };
 
-layout(std430,binding = 2,row_major) buffer ShapeVertex 
+layout(std430,binding = 3,row_major) buffer ShapeVertex 
 {
     vec4 data[];
 };

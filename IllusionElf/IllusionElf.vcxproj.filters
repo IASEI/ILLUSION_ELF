@@ -105,7 +105,16 @@
     <ClInclude Include="PQEImport.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PQERender.h">
+    <ClInclude Include="PQEModelRender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PQEOperator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Elf\include\stb_image.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="PQEFrameRender.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,7 +191,16 @@
     <ClCompile Include="PQEImport.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PQERender.cpp">
+    <ClCompile Include="PQEModelRender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PQEOperator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Elf\include\stb_image.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="PQEFrameRender.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
