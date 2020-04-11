@@ -28,7 +28,13 @@ namespace PQE
 		PQE_MODEL_ASE,
 		PQE_MODEL_OTHER
 	};
-
+	
+	enum PQE_FRAME_TYPE
+	{
+		PQE_FRAME_ORDINARY,
+		PQE_FRAME_SHADOW,
+		PQE_FRAME_MSAA,
+	};
 
 	class PQE_MODEL
 	{

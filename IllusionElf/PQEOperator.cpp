@@ -22,8 +22,19 @@ namespace PQE
 		return this;
 	}
 
-	unsigned int PQEFrameRender::operator>>(FrameAttribute mRenderShader)
+	unsigned int PQEFrameRender::operator>>(FrameAttribute *mRenderShader)
 	{
 		this->mModelRenderShader.push_back(mRenderShader);
+		this->mBuffer=this->mModelRenderShader[this->mModelRenderShader.size() - 1];
+		if (this->CreateFrame())
+		{
+			this->mBuffer->success = true;
+			unsigned int id= this->mBuffer->mTextureId;
+			this->mBuffer = NULL;
+			return id;
+		}
+		this->mBuffer->success = false;
+		this->mBuffer = NULL;
+		return 0;
 	}
 }

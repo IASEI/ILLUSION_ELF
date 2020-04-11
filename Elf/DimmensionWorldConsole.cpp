@@ -1,9 +1,43 @@
 #include "DimmensionWorldConsole.h"
 
-DimmensionWorldConsole::DimmensionWorldConsole() :mExit(false), mName(""), mClearColor(glm::vec4(0.1, 0.1, 0.1, 1.0f)), mScreenWidth(800), mScreenHeight(460)
+SystemAttribute::SystemAttribute():
+mSpace(glm::scale(glm::vec3(1.0f))), mLightProjection(glm::mat4(1.0f)), mLightView(glm::mat4(1.0f))
+{
+	SystemActionShadow = 0;
+	SystemActionBone = 0;
+	SystemActionShape = 1;
+	SystemLightLocation = glm::vec4(0.0f);
+	SystemLightDirection = glm::vec4(0.5f, 1.0f, 0.8f,0.0f);
+	SystemLightAmbient = glm::vec4(0.6f);
+	SystemLightDiffuse = glm::vec4(0.6f);
+	SystemLightSpecular = glm::vec4(0.6f);
+}
+bool SystemAttribute::operator ==(SystemAttribute &msys)
+{
+	if (this->mEnvironment == msys.mEnvironment&&
+		this->mLightProjection == msys.mLightProjection&&
+		this->mLightView == msys.mLightView&&
+		this->mOrdinary == msys.mOrdinary&&
+		this->mSpace == msys.mSpace&&
+		this->mSunlight == msys.mSunlight)
+	{
+		return true;
+	}
+	return false;
+}
+SystemAttribute::~SystemAttribute()
 {
 
 }
+
+DimmensionWorldConsole::DimmensionWorldConsole() :mExit(false), mName(""), mClearColor(glm::vec4(0.1, 0.1, 0.1, 1.0f)),
+mScreenWidth(1000), mScreenHeight(900), mShadowOrthoWidth(100), mShadowOrthoNear(0.001f), mShadowOrthoFar(100.f),
+mShadowLookAtEyes(glm::vec3(0.0f)),mShadowLookAtDirection(glm::vec3(0.0, 1.0, 0.0))
+{
+
+}
+
+
 
 DimmensionWorldConsole::~DimmensionWorldConsole()
 {
@@ -21,6 +55,12 @@ int DimmensionWorldConsole::Main()
 		this->Render();
 		this->ImGuiRenderSystem();
 		this->SwapBuffersSystem();
+		this->mSys->mSpace = glm::scale(glm::vec3(i += 0.001f));
+		if (this->mSys&&!(this->mSysCopy == *this->mSys)&&this->mSystemAttribute_ssao)
+		{
+			this->mSysCopy = *this->mSys;
+			this->mShader->setShaderStorageBufferObjectData(*this->mSystemAttribute_ssao,sizeof(SystemAttribute),mSys);
+		}
 	}
 	this->End();
 
@@ -98,19 +138,50 @@ void DimmensionWorldConsole::RenderImgUI()
 
 }
 void DimmensionWorldConsole::StartSystemThread() {}
+
+void DimmensionWorldConsole::SetSystemAttribute(unsigned int id)
+{
+	if (!this->mSystemAttribute_ssao)
+		this->mSystemAttribute_ssao = new unsigned int(id);
+	else
+		*this->mSystemAttribute_ssao = id;
+}
+
+void DimmensionWorldConsole::SetShadowOrthoWidth(float width)
+{
+	this->mShadowOrthoWidth = width;
+}
+
+void DimmensionWorldConsole::SetShadowOrthoNear(float mNear) 
+{
+	this->mShadowOrthoNear = mNear;
+}
+
+void DimmensionWorldConsole::SetShadowOrthoFar(float mFar)
+{
+	this->mShadowOrthoFar = mFar;
+}
+void DimmensionWorldConsole::SetShadowShadowLookAtEyes(glm::vec3 eyes)
+{
+	this->mShadowLookAtEyes = eyes;
+}
+
+void DimmensionWorldConsole::SetShadowLookAtDirction(glm::vec3 direction)
+{
+	this->mShadowLookAtDirection = direction;
+}
+
 //初始化普通数据
 void DimmensionWorldConsole::InitBasic()
 {
-	
+	mSys = new SystemAttribute;
 	this->mShader = new shader("../Elf/magic/shader/modelLight.vs", "../Elf/magic/shader/modelLight.fs");
 	this->mShadow = new shader("../Elf/magic/shader/shadowTexture.vs", "../Elf/magic/shader/shadowTexture.fs");
 	this->mPlugIn = new ASE::PlugInContainer;
 	this->mShader->use();
-	this->mShader->setBool("animat", true);
 	this->mShader->setMat4("projection", glm::perspective(glm::radians(45.0f), this->mScreenWidth / this->mScreenHeight, 0.1f, 10000.0f));
 	//this->mShader->setMat4("projection", glm::ortho(-1920.0f/1080, 1920.0f / 1080, -1.0f, 1.0f, -1.0f, 100.0f));
 	this->mShader->setInt("mShadowMap", 1);
-
 	this->mShader->setBool("mConfig.isDiffuseSampler", false);
 	this->mShader->setBool("mConfig.isSpecularSampler", false);
 	this->mShader->setBool("mConfig.isLightdirction", true);
@@ -123,11 +194,8 @@ void DimmensionWorldConsole::InitBasic()
 	this->mShader->setInt("mMaterial.specular", 1);
 	this->mShader->setFloat("mMaterial.shininess", 2);
 
-	this->mShader->setVec3("mDirLight.direction", glm::vec3(-0.5f, -1.0f, -0.8f));
-	this->mShader->setVec3("mDirLight.ambient", glm::vec3(0.6f));
-	this->mShader->setVec3("mDirLight.diffuse", glm::vec3(0.6f));
-	this->mShader->setVec3("mDirLight.specular", glm::vec3(0.0f));
-
+	this->SetSystemAttribute(this->mShader->createShaderStorageBufferObject(0, sizeof(SystemAttribute), NULL, GL_DYNAMIC_COPY));
+	this->mShader->setShaderStorageBufferObjectData(*this->mSystemAttribute_ssao,sizeof(SystemAttribute), (void*)mSys);
 	std::cout << "init shader finish" << endl;
 	this->mPlugIn->Init();
 }

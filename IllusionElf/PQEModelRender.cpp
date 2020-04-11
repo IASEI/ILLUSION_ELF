@@ -46,6 +46,7 @@ namespace PQE
 						{
 							shpae = &model->mShape[node->mShapeIndex[i]];
 							weight[i] = shpae->weight;
+							if (i == 2)weight[i] = 1.0f;
 							memcpy(shapeVertex + shpaeVertexCount * i, &shpae->mPosition[0], shpaeVertexCount * sizeof(glm::vec4));
 						}
 						mshader->setShaderStorageBufferObjectData(*this->shape_ssao, sizeof(glm::vec4)*shapeNodeVertexCount, shapeVertex);

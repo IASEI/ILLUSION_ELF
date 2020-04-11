@@ -32,10 +32,15 @@ in      vec3                mNormals;
 in      vec3                mFragPos;
 in      vec4                mFragPosLightSpace;
 
+in vec3 mLightLocation;
+in vec3 mLightDirection;	
+in vec3 mLightAmbient;	
+in vec3 mLightDiffuse;
+
 uniform sampler2D           mShadowMap;
 uniform vec3                mCarmePos;
 uniform vec3                mLightPos;
-uniform ASESLightDirction   mDirLight;
+
 uniform ASESLightPoint      mPointLight[10];
 uniform ASESLightSpot       mSpotLight;
 uniform ASESMaterial        mMaterial;
@@ -49,6 +54,11 @@ void main()
     vec3  result=vec3(0.0f,0.0f,0.0f);                                   //最后结果
     float gamma = 1.4;                                                   //伽马常数
     float shadow=0;                                                      //阴影结果
+	ASESLightDirction   mDirLight;
+	mDirLight.direction=mLightDirection ;
+	mDirLight.ambient=mLightAmbient ;
+	mDirLight.diffuse=mLightAmbient ;
+	mDirLight.specular=mLightAmbient ;
     shadow = ShadowCalculation(mFragPosLightSpace,mDirLight,norm);       //阴影计算
     result += CalcDirLight(mDirLight,norm,carmeDir,shadow);              //平行光光照
     for(int i = 0; i < mConfig.lightPointNum; i++)                       //点光源光照

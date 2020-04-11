@@ -6,7 +6,9 @@
 #include "PQEExport.h"
 #include "PQEImport.h"
 #include "PQEModelRender.h"
+#include "PQEFrameRender.h"
 #include "PQEOperator.h"
+
 class IllusionElf :public DimmensionWorldConsole
 {
 public:
@@ -25,6 +27,7 @@ public:
 		shadow.init();
 		IE_MODEL.mshader = mShader;
 		ren >> new PQE::PQEImport("miku.ase");
+		frame >>new PQE::FrameAttribute(&ren,mShader,1000,1000);
 		printf("-----------------\n");
 	}
 
@@ -38,8 +41,11 @@ public:
 		mShader->setVec3("carmePos", glm::vec3(0.0f));
 		mShader->setMat4("model", glm::rotate(glm::rotate(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)), glm::vec3(0.0f, -100.0f, -100.0f)), glm::radians(i), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		//shadow.BeginShadowFrameRender();
-		ren.Render(mShader);
 		//shadow.EndShadowFrameRender();
+		//frame.Render();
+		glEnable(GL_DEPTH_TEST);
+		ren.Render(mShader);
+
 	}
 
 private:
@@ -48,5 +54,6 @@ private:
 	Shadow shadow;
 	PQE::PQEImport *model;
 	PQE::PQEModelRender ren;
+	PQE::PQEFrameRender frame;
 	float i = 0;
 };
